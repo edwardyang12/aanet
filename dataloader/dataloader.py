@@ -49,11 +49,16 @@ class StereoDataset(Dataset):
             'test': 'filenames/KITTI_2015_test.txt'
         }
 
+        custom = {
+            'train': 'filenames/custom_train.txt',
+            'val': 'filenames/custom_val.txt'
+        }
         dataset_name_dict = {
             'SceneFlow': sceneflow_finalpass_dict,
             'KITTI2012': kitti_2012_dict,
             'KITTI2015': kitti_2015_dict,
             'KITTI_mix': kitti_mix_dict,
+            'custom_dataset' : custom,
         }
 
         assert dataset_name in dataset_name_dict.keys()
