@@ -74,6 +74,48 @@ def gen_own_data():
             val_f.write(right)
             val_f.write(gt)
 
+def gen_own_data_full():
+    data_dir = 'linked_v9'
+    train_list = 'linked_v9/training_lists/all_train.txt'
+    val_list = 'linked_v9/training_lists/all_val.txt'
+
+
+    train_list_f = open(train_list, 'r')
+    val_list_f = open(val_list, 'r')
+
+    train_file = 'filenames/custom_train_full.txt'
+    val_file = 'filenames/custom_val_full.txt'
+
+    with open(train_file, 'w') as train_f, open(val_file, 'w') as val_f:
+        while True:
+            x = train_list_f.readline() # gets each directory
+            if not x:
+                break
+            else:
+                x = x.split()[0]
+            if x[0]!='1' and x[0]!='0':
+                continue
+            left = 'training/' +  x + '/0128_irL_denoised_half.png '
+            right = 'training/' +  x + '/0128_irR_denoised_half.png '
+            gt = 'training/' +  x + '/depthL_fromR.png \n'
+            train_f.write(left)
+            train_f.write(right)
+            train_f.write(gt)
+
+        while True:
+            x = val_list_f.readline() # gets each directory
+            if not x:
+                break
+            else:
+                x = x.split()[0]
+            if x[0]!='1' and x[0]!='0':
+                continue
+            left = 'training/' +  x + '/0128_irL_denoised_half.png '
+            right = 'training/' +  x + '/0128_irR_denoised_half.png '
+            gt = 'training/' +  x + '/depthL_fromR.png \n'
+            val_f.write(left)
+            val_f.write(right)
+            val_f.write(gt)
 
 if __name__ == '__main__':
-    gen_own_data()
+    gen_own_data_full()
