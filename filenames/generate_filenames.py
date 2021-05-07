@@ -1,6 +1,9 @@
 import os
 from glob import glob
 from PIL import Image
+from depth2disp import convert
+
+intrinsic = np.array([[1387.095, 0.0, 960.0], [0.0, 1387.095, 540.0], [0.0, 0.0, 1.0]])
 
 def gen_kitti_2015():
     data_dir = 'data/KITTI/kitti_2015/data_scene_flow'
@@ -55,13 +58,18 @@ def gen_own_data():
             left = 'training/' +  x + '/0128_irL_denoised_half.png '
             right = 'training/' +  x + '/0128_irR_denoised_half.png '
 
+            # os.mkdir('/cephfs/edward/'+x)
             # image = Image.open(data_dir + '/training/' +  x + '/depthL_fromR.png')
             # new_image = image.resize((960,540))
-            # os.mkdir('/cephfs/edward/'+x)
             # new_image.save('/cephfs/edward/'+x +'/depthL_fromR_down.png')
-            gt = '/cephfs/edward/'+x +'/depthL_fromR_down.png \n'
+            # gt = '/cephfs/edward/'+x +'/depthL_fromR_down.png \n'
 
-            # gt = 'training/' +  x + '/depthL_fromR.png \n'
+            temp = '/cephfs/edward/'+x +'/depthL_fromR_down.png'
+            out = '/cephfs/edward/'+x +'/disp.png'
+            convert(temp, intrinsic,0.055,out)
+            gt = '/cephfs/edward/'+x +'/disp.png \n'
+
+
             train_f.write(left)
             train_f.write(right)
             train_f.write(gt)
