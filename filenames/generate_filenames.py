@@ -1,6 +1,6 @@
 import os
 from glob import glob
-
+from PIL import Image
 
 def gen_kitti_2015():
     data_dir = 'data/KITTI/kitti_2015/data_scene_flow'
@@ -54,7 +54,11 @@ def gen_own_data():
                 continue
             left = 'training/' +  x + '/0128_irL_denoised_half.png '
             right = 'training/' +  x + '/0128_irR_denoised_half.png '
-            gt = 'training/' +  x + '/depthL_fromR.png \n'
+            image = Image.open('training/' +  x + '/depthL_fromR.png')
+            new_image = image.resize((960,540))
+            new_image.save('/cephfs/edward/'+x +'/depthL_fromR_down.png')
+            gt = '/cephfs/edward/'+x +'/depthL_fromR_down.png'
+            # gt = 'training/' +  x + '/depthL_fromR.png \n'
             train_f.write(left)
             train_f.write(right)
             train_f.write(gt)
@@ -69,7 +73,13 @@ def gen_own_data():
                 continue
             left = 'training/' +  x + '/0128_irL_denoised_half.png '
             right = 'training/' +  x + '/0128_irR_denoised_half.png '
-            gt = 'training/' +  x + '/depthL_fromR.png \n'
+
+            image = Image.open('training/' +  x + '/depthL_fromR.png')
+            new_image = image.resize((960,540))
+            new_image.save('/cephfs/edward/'+x +'/depthL_fromR_down.png')
+            gt = '/cephfs/edward/'+x +'/depthL_fromR_down.png'
+
+            # gt = 'training/' +  x + '/depthL_fromR.png \n'
             val_f.write(left)
             val_f.write(right)
             val_f.write(gt)
@@ -118,4 +128,4 @@ def gen_own_data_full():
             val_f.write(gt)
 
 if __name__ == '__main__':
-    gen_own_data_full()
+    gen_own_data()
