@@ -55,7 +55,7 @@ def gen_own_data():
             left = 'training/' +  x + '/0128_irL_denoised_half.png '
             right = 'training/' +  x + '/0128_irR_denoised_half.png '
 
-            image = Image.open(data_dir + 'training/' +  x + '/depthL_fromR.png')
+            image = Image.open(data_dir + '/training/' +  x + '/depthL_fromR.png')
             new_image = image.resize((960,540))
             new_image.save('/cephfs/edward/'+x +'/depthL_fromR_down.png')
             gt = '/cephfs/edward/'+x +'/depthL_fromR_down.png'
@@ -76,7 +76,7 @@ def gen_own_data():
             left = 'training/' +  x + '/0128_irL_denoised_half.png '
             right = 'training/' +  x + '/0128_irR_denoised_half.png '
 
-            image = Image.open(data_dir + 'training/' +  x + '/depthL_fromR.png')
+            image = Image.open(data_dir + '/training/' +  x + '/depthL_fromR.png')
             new_image = image.resize((960,540))
             new_image.save('/cephfs/edward/'+x +'/depthL_fromR_down.png')
             gt = '/cephfs/edward/'+x +'/depthL_fromR_down.png'
