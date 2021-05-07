@@ -57,6 +57,7 @@ def gen_own_data():
 
             image = Image.open(data_dir + '/training/' +  x + '/depthL_fromR.png')
             new_image = image.resize((960,540))
+            os.mkdir('/cephfs/edward/'+x)
             new_image.save('/cephfs/edward/'+x +'/depthL_fromR_down.png')
             gt = '/cephfs/edward/'+x +'/depthL_fromR_down.png'
 
@@ -78,6 +79,7 @@ def gen_own_data():
 
             image = Image.open(data_dir + '/training/' +  x + '/depthL_fromR.png')
             new_image = image.resize((960,540))
+            os.mkdir('/cephfs/edward/'+x)
             new_image.save('/cephfs/edward/'+x +'/depthL_fromR_down.png')
             gt = '/cephfs/edward/'+x +'/depthL_fromR_down.png'
 
