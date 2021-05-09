@@ -20,11 +20,11 @@ def bad(d_est, d_gt, mask, threshold=1, use_np=False):
     if use_np:
         e = np.abs(d_gt - d_est)
         err_mask = (e>threshold)
-        bad = (np.count_nonzero(err_mask))/len(d_gt)
+        bad = np.mean(err_mask.astype('float'))
     else:
         e = torch.abs(d_gt - d_est)
         err_mask = (e>threshold)
-        bad = (torch.count_nonzero(err_mask))/len(d_gt)
+        bad = torch.mean(err_mask.float())
     return bad
 
 # 2mm, 4mm, 8mm
@@ -34,11 +34,11 @@ def mm_error(depth_est, depth_gt, mask, threshold=2, use_np=False):
     if use_np:
         e = np.abs(d_gt - d_est)
         err_mask = (e>threshold)
-        bad = (np.count_nonzero(err_mask))/len(d_gt)
+        bad = np.mean(err_mask.astype('float'))
     else:
         e = torch.abs(d_gt - d_est)
         err_mask = (e>threshold)
-        bad = (torch.count_nonzero(err_mask))/len(d_gt)
+        bad = torch.mean(err_mask.float())
     return bad
 
 
