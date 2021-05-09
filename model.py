@@ -268,7 +268,7 @@ class Model(object):
             bad2 = bad(pred_disp, gt_disp, mask, threshold=2)
 
             baseline = 0.055
-            intrinsic = np.array([[1387.095, 0.0, 960.0], [0.0, 1387.095, 540.0], [0.0, 0.0, 1.0]])
+            intrinsic = torch.tensor([[1387.095, 0.0, 960.0], [0.0, 1387.095, 540.0], [0.0, 0.0, 1.0]]).to(self.device)
 
             gt_depth = (baseline*1000*intrinsic[0][0])/gt_disp
             gt_depth[gt_depth==inf]=0
