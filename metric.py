@@ -28,7 +28,7 @@ def bad(d_est, d_gt, mask, threshold=1, use_np=False):
     return bad
 
 # 2mm, 4mm, 8mm
-def mm_error(depth_est, depth_gt, mask, threshold=0.002, use_np=False):
+def mm_error(depth_est, depth_gt, mask, threshold=2, use_np=False):
     d_est, d_gt = depth_est[mask], depth_gt[mask]
     bad = []
     if use_np:

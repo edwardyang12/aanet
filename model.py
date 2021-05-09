@@ -278,8 +278,8 @@ class Model(object):
             abs = F.l1_loss(gt_depth[mask], pred_depth[mask], reduction='mean')
 
             mm2 = mm_error(pred_depth, gt_depth,mask)
-            mm4 = mm_error(pred_depth, gt_depth,mask, threshold=0.004)
-            mm8 = mm_error(pred_depth, gt_depth,mask, threshold=0.008)
+            mm4 = mm_error(pred_depth, gt_depth,mask, threshold=4)
+            mm8 = mm_error(pred_depth, gt_depth,mask, threshold=8)
 
             # thres1 = thres_metric(pred_disp, gt_disp, mask, 1.0)
             # thres2 = thres_metric(pred_disp, gt_disp, mask, 2.0)
