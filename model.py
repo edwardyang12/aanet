@@ -303,11 +303,11 @@ class Model(object):
                     img_summary = dict()
                     # img_summary['disp_error'] = disp_error_img(pred_disp, gt_disp)
 
-                    depth_error = (baseline*1000*intrinsic[0][0])/disp_error_img(pred_disp, gt_disp)
+                    depth_error = (baseline*1000*intrinsic[0][0])/(disp_error_img(pred_disp, gt_disp))
                     depth_error[depth_error==inf]=0
                     img_summary['depth_error'] = depth_error
                     img_summary['left'] = left
-                    img_summary['right'] =
+                    img_summary['right'] = right
                     img_summary['gt_depth'] = gt_depth
                     img_summary['pred_depth'] = pred_depth
 
