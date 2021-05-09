@@ -13,6 +13,34 @@ def epe_metric(d_est, d_gt, mask, use_np=False):
 
     return epe
 
+# bad 1.0, bad 2.0
+def bad(d_est, d_gt, mask, threshold=1, use_np=False):
+    d_est, d_gt = d_est[mask], d_gt[mask]
+    bad = []
+    if use_np:
+        e = np.abs(d_gt - d_est)
+        err_mask = (e>threshold)
+        bad = (np.count_nonzero(err_mask))/len(d_gt)
+    else:
+        e = torch.abs(d_gt - d_est)
+        err_mask = (e>threshold)
+        bad = (torch.count_nonzero(err_mask))/len(d_gt)
+    return bad
+
+# 2mm, 4mm, 8mm
+def mm_error(depth_est, depth_gt, mask, threshold=0.002, use_np=False):
+    d_est, d_gt = depth_est[mask], depth_gt[mask]
+    bad = []
+    if use_np:
+        e = np.abs(d_gt - d_est)
+        err_mask = (e>threshold)
+        bad = (np.count_nonzero(err_mask))/len(d_gt)
+    else:
+        e = torch.abs(d_gt - d_est)
+        err_mask = (e>threshold)
+        bad = (torch.count_nonzero(err_mask))/len(d_gt)
+    return bad
+
 
 def d1_metric(d_est, d_gt, mask, use_np=False):
     d_est, d_gt = d_est[mask], d_gt[mask]

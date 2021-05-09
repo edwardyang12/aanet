@@ -6,8 +6,8 @@ import os
 
 from utils import utils
 from utils.visualization import disp_error_img, save_images
-from metric import d1_metric, thres_metric
-
+from metric import d1_metric, thres_metric, bad, mm_error
+from math import inf
 
 class Model(object):
     def __init__(self, args, logger, optimizer, aanet, device, start_iter=0, start_epoch=0,
@@ -257,25 +257,50 @@ class Model(object):
 
             epe = F.l1_loss(gt_disp[mask], pred_disp[mask], reduction='mean')
             d1 = d1_metric(pred_disp, gt_disp, mask)
-            thres1 = thres_metric(pred_disp, gt_disp, mask, 1.0)
-            thres2 = thres_metric(pred_disp, gt_disp, mask, 2.0)
-            thres3 = thres_metric(pred_disp, gt_disp, mask, 3.0)
+
+            bad1 = bad(pred_disp, gt_disp, mask)
+            bad2 = bad(pred_disp, gt_disp, mask, threshold=2)
+
+            baseline = 0.055
+            intrinsic = np.array([[1387.095, 0.0, 960.0], [0.0, 1387.095, 540.0], [0.0, 0.0, 1.0]])
+
+            gt_depth = (baseline*1000*intrinsic[0][0])/gt_disp
+            gt_depth[gt_depth==inf]=0
+
+            pred_depth = (baseline*1000*intrinsic[0][0])/pred_disp
+            pred_disp[pred_disp==inf]=0
+            abs = F.l1_loss(gt_depth[mask], pred_depth[mask], reduction='mean')
+
+            mm2 = mm_error(pred_depth, gt_depth,mask)
+            mm4 = mm_error(pred_depth, gt_depth,mask, threshold=0.004)
+            mm8 = mm_error(pred_depth, gt_depth,mask, threshold=0.008)
+
+            # thres1 = thres_metric(pred_disp, gt_disp, mask, 1.0)
+            # thres2 = thres_metric(pred_disp, gt_disp, mask, 2.0)
+            # thres3 = thres_metric(pred_disp, gt_disp, mask, 3.0)
 
             val_epe += epe.item()
             val_d1 += d1.item()
-            val_thres1 += thres1.item()
-            val_thres2 += thres2.item()
-            val_thres3 += thres3.item()
+            # val_thres1 += thres1.item()
+            # val_thres2 += thres2.item()
+            # val_thres3 += thres3.item()
 
             # Save 3 images for visualization
             if not args.evaluate_only:
                 if i in [num_samples // 4, num_samples // 2, num_samples // 4 * 3]:
                     img_summary = dict()
-                    img_summary['disp_error'] = disp_error_img(pred_disp, gt_disp)
+                    # img_summary['disp_error'] = disp_error_img(pred_disp, gt_disp)
+
+                    depth_error = (baseline*1000*intrinsic[0][0])/disp_error_img(pred_disp, gt_disp)
+                    depth_error[depth_error==inf]=0
+                    img_summary['depth_error'] = depth_error
                     img_summary['left'] = left
-                    img_summary['right'] = right
-                    img_summary['gt_disp'] = gt_disp
-                    img_summary['pred_disp'] = pred_disp
+                    img_summary['right'] = 
+                    img_summary['gt_depth'] = gt_depth
+                    img_summary['pred_depth'] = pred_depth
+
+                    # img_summary['gt_disp'] = gt_disp
+                    # img_summary['pred_disp'] = pred_disp
                     save_images(self.train_writer, 'val' + str(val_count), img_summary, self.epoch)
                     val_count += 1
 
@@ -283,27 +308,45 @@ class Model(object):
 
         mean_epe = val_epe / valid_samples
         mean_d1 = val_d1 / valid_samples
-        mean_thres1 = val_thres1 / valid_samples
-        mean_thres2 = val_thres2 / valid_samples
-        mean_thres3 = val_thres3 / valid_samples
+        mean_bad1 = bad1/valid_samples
+        mean_bad2 = bad2/valid_samples
+        mean_abs = abs/valid_samples
+        mean_mm2 = mm2/valid_samples
+        mean_mm4 = mm4/valid_samples
+        mean_mm8 = mm8/valid_samples
+        # mean_thres1 = val_thres1 / valid_samples
+        # mean_thres2 = val_thres2 / valid_samples
+        # mean_thres3 = val_thres3 / valid_samples
 
         # Save validation results
         with open(val_file, 'a') as f:
             f.write('epoch: %03d\t' % self.epoch)
-            f.write('epe: %.3f\t' % mean_epe)
+            f.write('epe: %.4f\t' % mean_epe)
             f.write('d1: %.4f\t' % mean_d1)
-            f.write('thres1: %.4f\t' % mean_thres1)
-            f.write('thres2: %.4f\t' % mean_thres2)
-            f.write('thres3: %.4f\n' % mean_thres3)
+            f.write('bad1: %.4f\t' % mean_bad1)
+            f.write('bad2: %.4f\t' % mean_bad2)
+            f.write('abs: %.4f\t' % mean_abs)
+            f.write('mm2: %.4f\t' % mean_mm2)
+            f.write('mm4: %.4f\t' % mean_mm4)
+            f.write('mm8: %.4f\t' % mean_mm8)
+            # f.write('thres1: %.4f\t' % mean_thres1)
+            # f.write('thres2: %.4f\t' % mean_thres2)
+            # f.write('thres3: %.4f\n' % mean_thres3)
 
         logger.info('=> Mean validation epe of epoch %d: %.3f' % (self.epoch, mean_epe))
 
         if not args.evaluate_only:
             self.train_writer.add_scalar('val/epe', mean_epe, self.epoch)
             self.train_writer.add_scalar('val/d1', mean_d1, self.epoch)
-            self.train_writer.add_scalar('val/thres1', mean_thres1, self.epoch)
-            self.train_writer.add_scalar('val/thres2', mean_thres2, self.epoch)
-            self.train_writer.add_scalar('val/thres3', mean_thres3, self.epoch)
+            self.train_writer.add_scalar('val/bad1', mean_bad1, self.epoch)
+            self.train_writer.add_scalar('val/bad2', mean_bad2, self.epoch)
+            self.train_writer.add_scalar('val/abs', mean_abs, self.epoch)
+            self.train_writer.add_scalar('val/mm2', mean_mm2, self.epoch)
+            self.train_writer.add_scalar('val/mm4', mean_mm4, self.epoch)
+            self.train_writer.add_scalar('val/mm8', mean_mm8, self.epoch)
+            # self.train_writer.add_scalar('val/thres1', mean_thres1, self.epoch)
+            # self.train_writer.add_scalar('val/thres2', mean_thres2, self.epoch)
+            # self.train_writer.add_scalar('val/thres3', mean_thres3, self.epoch)
 
         if not args.evaluate_only:
             if args.val_metric == 'd1':
