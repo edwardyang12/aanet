@@ -1,6 +1,5 @@
 from PIL import Image
 import numpy as np
-from matplotlib import pyplot as plt
 import pickle
 from numpy import inf
 
@@ -18,7 +17,9 @@ def convert_file(original, intrinsic, baseline, save):
     new_image = (baseline*1000*intrinsic[0][0])/new_image
     new_image[new_image== inf] = 0
 
-    plt.imsave(save,new_image)
+
+    new_image = Image.fromarray(new_image)
+    new_image.save(save)
 
 
 # intrinsic = np.array([[1387.095, 0.0, 960.0], [0.0, 1387.095, 540.0], [0.0, 0.0, 1.0]])
