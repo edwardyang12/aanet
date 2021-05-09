@@ -219,9 +219,15 @@ class Model(object):
 
         val_epe = 0
         val_d1 = 0
-        val_thres1 = 0
-        val_thres2 = 0
-        val_thres3 = 0
+        # val_thres1 = 0
+        # val_thres2 = 0
+        # val_thres3 = 0
+        val_bad1 = 0
+        val_bad2 = 0
+        val_abs = 0
+        val_mm2 = 0
+        val_mm4 = 0
+        val_mm8 = 0
 
         val_count = 0
 
@@ -281,6 +287,12 @@ class Model(object):
 
             val_epe += epe.item()
             val_d1 += d1.item()
+            val_bad1 += bad1.item()
+            val_bad2 += bad2.item()
+            val_abs += abs.item()
+            val_mm2 += mm2.item()
+            val_mm4 += mm4.item()
+            val_mm8 += mm8.item()
             # val_thres1 += thres1.item()
             # val_thres2 += thres2.item()
             # val_thres3 += thres3.item()
@@ -295,7 +307,7 @@ class Model(object):
                     depth_error[depth_error==inf]=0
                     img_summary['depth_error'] = depth_error
                     img_summary['left'] = left
-                    img_summary['right'] = 
+                    img_summary['right'] =
                     img_summary['gt_depth'] = gt_depth
                     img_summary['pred_depth'] = pred_depth
 
@@ -308,12 +320,12 @@ class Model(object):
 
         mean_epe = val_epe / valid_samples
         mean_d1 = val_d1 / valid_samples
-        mean_bad1 = bad1/valid_samples
-        mean_bad2 = bad2/valid_samples
-        mean_abs = abs/valid_samples
-        mean_mm2 = mm2/valid_samples
-        mean_mm4 = mm4/valid_samples
-        mean_mm8 = mm8/valid_samples
+        mean_bad1 = val_bad1/valid_samples
+        mean_bad2 = val_bad2/valid_samples
+        mean_abs = val_abs/valid_samples
+        mean_mm2 = val_mm2/valid_samples
+        mean_mm4 = val_mm4/valid_samples
+        mean_mm8 = val_mm8/valid_samples
         # mean_thres1 = val_thres1 / valid_samples
         # mean_thres2 = val_thres2 / valid_samples
         # mean_thres3 = val_thres3 / valid_samples

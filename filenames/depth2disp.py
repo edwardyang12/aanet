@@ -2,9 +2,12 @@ from PIL import Image
 import numpy as np
 from matplotlib import pyplot as plt
 import pickle
+from numpy import inf
 
 # in mm
-def convert(original, intrinsic, baseline, save):
+# intrinisc is matrix
+# baseline is value
+def convert_file(original, intrinsic, baseline, save):
     # load the image
     image = Image.open(original)
 
@@ -12,12 +15,8 @@ def convert(original, intrinsic, baseline, save):
     data = np.asarray(image)
 
     new_image = np.copy(data)
-    for i in range(len(new_image)):
-        for j in range(len(new_image[i])):
-            if(new_image[i][j]!=0):
-                new_image[i][j] = (baseline*1000*np.sqrt(intrinsic[0][0]**2+intrinsic[1][1]**2))/new_image[i][j]
-            else:
-                new_image[i][j] = 0
+    new_image = (baseline*1000*intrinsic[0][0])/new_image
+    new_image[new_image== inf] = 0
 
     plt.imsave(save,new_image)
 
