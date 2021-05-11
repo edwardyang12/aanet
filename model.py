@@ -57,6 +57,7 @@ class Model(object):
             gt_disp = sample['disp'].to(device)  # [B, H, W]
 
             mask = (gt_disp > 0) & (gt_disp < args.max_disp)
+            print(torch.mean(mask.float()))
 
             if args.load_pseudo_gt:
                 pseudo_gt_disp = sample['pseudo_disp'].to(device)
@@ -244,6 +245,7 @@ class Model(object):
             right = sample['right'].to(self.device)
             gt_disp = sample['disp'].to(self.device)  # [B, H, W]
             mask = (gt_disp > 0) & (gt_disp < args.max_disp)
+
 
             if not mask.any():
                 continue
