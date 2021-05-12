@@ -156,6 +156,9 @@ class Model(object):
 
                 epe = F.l1_loss(gt_disp[mask], pred_disp[mask], reduction='mean')
 
+                print(bad(pred_disp, gt_disp, mask))
+                print(bad(pred_disp, gt_disp, mask, threshold=2))
+
                 self.train_writer.add_scalar('train/epe', epe.item(), self.num_iter)
                 self.train_writer.add_scalar('train/disp_loss', disp_loss.item(), self.num_iter)
                 self.train_writer.add_scalar('train/total_loss', total_loss.item(), self.num_iter)
