@@ -156,6 +156,8 @@ class Model(object):
 
                 epe = F.l1_loss(gt_disp[mask], pred_disp[mask], reduction='mean')
 
+                bad1 = bad(pred_disp, gt_disp, mask)
+
                 self.train_writer.add_scalar('train/epe', epe.item(), self.num_iter)
                 self.train_writer.add_scalar('train/disp_loss', disp_loss.item(), self.num_iter)
                 self.train_writer.add_scalar('train/total_loss', total_loss.item(), self.num_iter)
@@ -303,9 +305,7 @@ class Model(object):
                 if i in [num_samples // 4, num_samples // 2, num_samples // 4 * 3]:
                     img_summary = dict()
                     img_summary['disp_error'] = disp_error_img(pred_disp, gt_disp)
-                    depth_error = (baseline*1000*intrinsic[0][0])/(disp_error_img(pred_disp, gt_disp))
-                    depth_error[depth_error==inf]=0
-                    img_summary['depth_error'] = depth_error
+                    img_summary['depth_error'] = depth_error_img(pred_depth, gt_depth)
                     img_summary['left'] = left
                     img_summary['right'] = right
                     img_summary['gt_depth'] = gt_disp
