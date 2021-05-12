@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import os
 
 from utils import utils
-from utils.visualization import disp_error_img, save_images
+from utils.visualization import disp_error_img, save_images, depth_error_img
 from metric import d1_metric, thres_metric, bad, mm_error
 from math import inf
 
@@ -155,9 +155,6 @@ class Model(object):
                 save_images(self.train_writer, 'train', img_summary, self.num_iter)
 
                 epe = F.l1_loss(gt_disp[mask], pred_disp[mask], reduction='mean')
-
-                print(bad(pred_disp, gt_disp, mask))
-                print(bad(pred_disp, gt_disp, mask, threshold=2))
 
                 self.train_writer.add_scalar('train/epe', epe.item(), self.num_iter)
                 self.train_writer.add_scalar('train/disp_loss', disp_loss.item(), self.num_iter)
