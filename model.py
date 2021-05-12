@@ -56,11 +56,11 @@ class Model(object):
             right = sample['right'].to(device)
             gt_disp = sample['disp'].to(device)  # [B, H, W]
 
-            mask = (gt_disp > 30) & (gt_disp < args.max_disp)
+            mask = (gt_disp > 30./256.) & (gt_disp < args.max_disp/256.)
 
             if args.load_pseudo_gt:
                 pseudo_gt_disp = sample['pseudo_disp'].to(device)
-                pseudo_mask = (pseudo_gt_disp > 30) & (pseudo_gt_disp < args.max_disp) & (~mask)  # inverse mask
+                pseudo_mask = (pseudo_gt_disp > 30./256.) & (pseudo_gt_disp < args.max_disp/256.) & (~mask)  # inverse mask
 
             if not mask.any():
                 continue
@@ -156,8 +156,6 @@ class Model(object):
 
                 epe = F.l1_loss(gt_disp[mask], pred_disp[mask], reduction='mean')
 
-                bad1 = bad(pred_disp, gt_disp, mask)
-
                 self.train_writer.add_scalar('train/epe', epe.item(), self.num_iter)
                 self.train_writer.add_scalar('train/disp_loss', disp_loss.item(), self.num_iter)
                 self.train_writer.add_scalar('train/total_loss', total_loss.item(), self.num_iter)
@@ -245,7 +243,7 @@ class Model(object):
             left = sample['left'].to(self.device)  # [B, 3, H, W]
             right = sample['right'].to(self.device)
             gt_disp = sample['disp'].to(self.device)  # [B, H, W]
-            mask = (gt_disp > 30) & (gt_disp < args.max_disp)
+            mask = (gt_disp > 30./256.) & (gt_disp < args.max_disp/256.)
 
 
             if not mask.any():
@@ -273,10 +271,10 @@ class Model(object):
             baseline = 0.055
             intrinsic = torch.tensor([[1387.095, 0.0, 960.0], [0.0, 1387.095, 540.0], [0.0, 0.0, 1.0]]).to(self.device)
 
-            gt_depth = (baseline*1000*intrinsic[0][0])/gt_disp
+            gt_depth = (baseline*1000*intrinsic[0][0])/gt_disp/256.
             gt_depth[gt_depth==inf]=0
 
-            pred_depth = (baseline*1000*intrinsic[0][0])/pred_disp
+            pred_depth = (baseline*1000*intrinsic[0][0])/pred_disp/256.
             pred_disp[pred_disp==inf]=0
             abs = F.l1_loss(gt_depth[mask], pred_depth[mask], reduction='mean')
 
