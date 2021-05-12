@@ -56,11 +56,11 @@ class Model(object):
             right = sample['right'].to(device)
             gt_disp = sample['disp'].to(device)  # [B, H, W]
 
-            mask = (gt_disp > 30./256.) & (gt_disp < args.max_disp/256.)
+            mask = (gt_disp > 0.) & (gt_disp < args.max_disp/256.)
 
             if args.load_pseudo_gt:
                 pseudo_gt_disp = sample['pseudo_disp'].to(device)
-                pseudo_mask = (pseudo_gt_disp > 30./256.) & (pseudo_gt_disp < args.max_disp/256.) & (~mask)  # inverse mask
+                pseudo_mask = (pseudo_gt_disp > 0.) & (pseudo_gt_disp < args.max_disp/256.) & (~mask)  # inverse mask
 
             if not mask.any():
                 continue
@@ -243,7 +243,7 @@ class Model(object):
             left = sample['left'].to(self.device)  # [B, 3, H, W]
             right = sample['right'].to(self.device)
             gt_disp = sample['disp'].to(self.device)  # [B, H, W]
-            mask = (gt_disp > 30./256.) & (gt_disp < args.max_disp/256.)
+            mask = (gt_disp > 0.) & (gt_disp < args.max_disp/256.)
 
 
             if not mask.any():
@@ -306,8 +306,9 @@ class Model(object):
                     img_summary['depth_error'] = depth_error_img(pred_depth, gt_depth)
                     img_summary['left'] = left
                     img_summary['right'] = right
-                    img_summary['gt_depth'] = gt_disp
-                    img_summary['gt_disp'] = pred_disp
+                    img_summary['gt_depth'] = gt_depth
+                    img_summary['gt_disp'] = gt_disp
+                    img_summary['pred_disp'] = pred_disp
                     img_summary['pred_depth'] = pred_depth
 
 

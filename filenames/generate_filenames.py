@@ -124,7 +124,8 @@ def gen_own_data_full():
                 continue
             left = 'training/' +  x + '/0128_irL_denoised_half.png '
             right = 'training/' +  x + '/0128_irR_denoised_half.png '
-            gt = 'training/' +  x + '/depthL_fromR.png \n'
+            # gt = 'training/' +  x + '/depthL_fromR.png \n'
+
             train_f.write(left)
             train_f.write(right)
             train_f.write(gt)
