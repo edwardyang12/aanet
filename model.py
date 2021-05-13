@@ -283,10 +283,10 @@ class Model(object):
             baseline = 0.055
             intrinsic = torch.tensor([[1387.095, 0.0, 960.0], [0.0, 1387.095, 540.0], [0.0, 0.0, 1.0]]).to(self.device)
 
-            gt_depth = (baseline*1000*intrinsic[0][0])/gt_disp/256.
+            gt_depth = (baseline*1000*intrinsic[0][0])/gt_disp/256./(16./3.)
             gt_depth[gt_depth==inf]=0
 
-            pred_depth = (baseline*1000*intrinsic[0][0])/pred_disp/256.
+            pred_depth = (baseline*1000*intrinsic[0][0])/pred_disp/256./(16./3.)
             pred_depth[pred_depth==inf]=0
             abs = F.l1_loss(gt_depth[mask], pred_depth[mask], reduction='mean')
 
