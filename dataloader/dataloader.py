@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from torch.utils.data import Dataset
 import os
+import pandas as pd
 
 from utils import utils
 from utils.file_io import read_img, read_disp
@@ -134,8 +135,10 @@ class StereoDataset(Dataset):
             sample = self.transform(sample)
 
         if(self.dataset_name == 'custom_dataset_full'):
-            sample['meta']['intrinsic'] = sample['meta']['intrinsic']
-            sample['meta']['baseline'] = abs((sample['meta']['extrinsic_l']-sample['meta']['extrinsic_r'])[0][3])
+            temp = pd.read_pickle(sample['meta'])
+            sample['meta'] = {}
+            sample['meta']['intrinsic'] = temp['intrinsic']
+            sample['meta']['baseline'] = abs((temp['extrinsic_l']-temp['extrinsic_r'])[0][3])
 
         return sample
 
