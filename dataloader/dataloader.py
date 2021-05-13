@@ -135,7 +135,7 @@ class StereoDataset(Dataset):
             sample = self.transform(sample)
 
         if(self.dataset_name == 'custom_dataset_full'):
-            temp = pd.read_pickle(sample['meta'])
+            temp = pd.read_pickle(sample_path['meta'])
             sample['intrinsic'] = temp['intrinsic']
             sample['baseline'] = abs((temp['extrinsic_l']-temp['extrinsic_r'])[0][3])
 
