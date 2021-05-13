@@ -19,11 +19,11 @@ def bad(d_est, d_gt, mask, threshold=1, use_np=False):
     bad = []
     if use_np:
         e = np.abs(d_gt - d_est)
-        err_mask = (e>threshold/16.)
+        err_mask = (e>3*threshold/16.)
         bad = np.mean(err_mask.astype('float'))
     else:
         e = torch.abs(d_gt - d_est)
-        err_mask = (e>threshold/16.)
+        err_mask = (e>3*threshold/16.)
         bad = torch.mean(err_mask.float())
     return bad
 
@@ -33,11 +33,11 @@ def mm_error(depth_est, depth_gt, mask, threshold=2, use_np=False):
     bad = []
     if use_np:
         e = np.abs(d_gt - d_est)
-        err_mask = (e>threshold)
+        err_mask = (e>threshold*16./3.)
         bad = np.mean(err_mask.astype('float'))
     else:
         e = torch.abs(d_gt - d_est)
-        err_mask = (e>threshold)
+        err_mask = (e>threshold*16./3.)
         bad = torch.mean(err_mask.float())
     return bad
 
@@ -65,7 +65,7 @@ def thres_metric(d_est, d_gt, mask, thres, use_np=False):
         e = np.abs(d_gt - d_est)
     else:
         e = torch.abs(d_gt - d_est)
-    err_mask = e > thres/16.
+    err_mask = e > 3*thres/16.
 
     if use_np:
         mean = np.mean(err_mask.astype('float'))

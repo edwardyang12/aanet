@@ -124,11 +124,19 @@ def gen_own_data_full():
                 continue
             left = 'training/' +  x + '/0128_irL_denoised_half.png '
             right = 'training/' +  x + '/0128_irR_denoised_half.png '
-            # gt = 'training/' +  x + '/depthL_fromR.png \n'
+
+            image = Image.open(data_dir + '/training/' +  x + '/depthR.png')
+            new_image = image.resize((960,540))
+            os.mkdir('/cephfs/edward/'+x)
+            new_image.save('/cephfs/edward/'+x +'/depthR_down.png')
+
+            gt = 'training/' +  x + '/depthR_down.png ' # will need to convert into disparity
+            meta = 'training/' +  x + '/meta.pkl \n'
 
             train_f.write(left)
             train_f.write(right)
             train_f.write(gt)
+            train_f.write(meta)
 
         while True:
             x = val_list_f.readline() # gets each directory
@@ -140,10 +148,19 @@ def gen_own_data_full():
                 continue
             left = 'training/' +  x + '/0128_irL_denoised_half.png '
             right = 'training/' +  x + '/0128_irR_denoised_half.png '
-            gt = 'training/' +  x + '/depthL_fromR.png \n'
+
+            image = Image.open(data_dir + '/training/' +  x + '/depthR.png')
+            new_image = image.resize((960,540))
+            os.mkdir('/cephfs/edward/'+x)
+            new_image.save('/cephfs/edward/'+x +'/depthR_down.png')
+
+            gt = 'training/' +  x + '/depthR_down.png ' # will need to convert into disparity
+            meta = 'training/' +  x + '/meta.pkl \n'
+
             val_f.write(left)
             val_f.write(right)
             val_f.write(gt)
+            val_f.write(meta)
 
 if __name__ == '__main__':
     gen_own_data()

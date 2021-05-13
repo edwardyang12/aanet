@@ -8,6 +8,7 @@ from utils import utils
 from utils.visualization import disp_error_img, save_images, depth_error_img
 from metric import d1_metric, thres_metric, bad, mm_error
 from math import inf
+from warp_ops import apply_disparity_cu
 
 class Model(object):
     def __init__(self, args, logger, optimizer, aanet, device, start_iter=0, start_epoch=0,
@@ -55,6 +56,11 @@ class Model(object):
             left = sample['left'].to(device)  # [B, 3, H, W]
             right = sample['right'].to(device)
             gt_disp = sample['disp'].to(device)  # [B, H, W]
+
+            if args.dataset_name=='custom_dataset_full':
+                temp = gt_disp*256.
+                disp = (sample['baseline']*1000*sample['intrinsic'][0][0])/temp
+                gt_disp = apply_disparity_cu(disp,-disp.type(torch.int))
 
             mask = (gt_disp > 0.) & (gt_disp < args.max_disp/256.)
 
@@ -243,6 +249,12 @@ class Model(object):
             left = sample['left'].to(self.device)  # [B, 3, H, W]
             right = sample['right'].to(self.device)
             gt_disp = sample['disp'].to(self.device)  # [B, H, W]
+
+            if args.dataset_name=='custom_dataset_full':
+                temp = gt_disp*256.
+                disp = (sample['baseline']*1000*sample['intrinsic'][0][0])/temp
+                gt_disp = apply_disparity_cu(disp,-disp.type(torch.int))
+
             mask = (gt_disp > 0.) & (gt_disp < args.max_disp/256.)
 
 
@@ -275,7 +287,7 @@ class Model(object):
             gt_depth[gt_depth==inf]=0
 
             pred_depth = (baseline*1000*intrinsic[0][0])/pred_disp/256.
-            pred_disp[pred_disp==inf]=0
+            pred_depth[pred_depth==inf]=0
             abs = F.l1_loss(gt_depth[mask], pred_depth[mask], reduction='mean')
 
             mm2 = mm_error(pred_depth, gt_depth,mask)

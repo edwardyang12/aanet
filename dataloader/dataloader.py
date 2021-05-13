@@ -83,6 +83,7 @@ class StereoDataset(Dataset):
             left_img, right_img = splits[:2]
             gt_disp = None if len(splits) == 2 else splits[2]
 
+
             sample = dict()
 
             if self.save_filename:
@@ -91,6 +92,10 @@ class StereoDataset(Dataset):
             sample['left'] = os.path.join(data_dir, left_img)
             sample['right'] = os.path.join(data_dir, right_img)
             sample['disp'] = os.path.join(data_dir, gt_disp) if gt_disp is not None else None
+
+            if(self.dataset_name == 'custom_dataset_full'):
+                meta = None if len(splits)<3 else splits[3]
+                sample['meta'] = os.path.join(data_dir, meta) # new line
 
             if load_pseudo_gt and sample['disp'] is not None:
                 # KITTI 2015
@@ -127,6 +132,10 @@ class StereoDataset(Dataset):
 
         if self.transform is not None:
             sample = self.transform(sample)
+
+        if(self.dataset_name == 'custom_dataset_full'):
+            sample['meta']['intrinsic'] = sample['meta']['intrinsic']
+            sample['meta']['baseline'] = abs((sample['meta']['extrinsic_l']-sample['meta']['extrinsic_r'])[0][3])
 
         return sample
 
