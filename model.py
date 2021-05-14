@@ -62,7 +62,7 @@ class Model(object):
                 baseline = torch.mean(sample['baseline']).to(device)
                 intrinsic = torch.mean(sample['intrinsic'][:,0][:,0]).to(device)
                 disp = (baseline*1000*intrinsic)/temp
-                gt_disp = apply_disparity_cu(disp,-disp.type(torch.int))
+                gt_disp = apply_disparity_cu(disp.unsqueeze(1),-disp.type(torch.int))
 
             mask = (gt_disp > 0.) & (gt_disp < args.max_disp/256.)
 
@@ -257,7 +257,7 @@ class Model(object):
                 baseline = torch.mean(sample['baseline']).to(device)
                 intrinsic = torch.mean(sample['intrinsic'][:,0][:,0]).to(device)
                 disp = (baseline*1000*intrinsic)/temp
-                gt_disp = apply_disparity_cu(disp,-disp.type(torch.int))
+                gt_disp = apply_disparity_cu(disp.unsqueeze(1),-disp.type(torch.int))
 
             mask = (gt_disp > 0.) & (gt_disp < args.max_disp/256.)
 
