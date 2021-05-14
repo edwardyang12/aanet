@@ -59,16 +59,16 @@ class Model(object):
 
             if args.dataset_name=='custom_dataset_full':
                 temp = gt_disp*256.
-                baseline = torch.mean(sample['baseline']).to(device)
-                intrinsic = torch.mean(sample['intrinsic'][:,0][:,0]).to(device)
+                baseline = torch.mean(sample['baseline']).to(self.device)
+                intrinsic = torch.mean(sample['intrinsic'][:,0][:,0]).to(self.device)
                 disp = (baseline*1000*intrinsic)/temp
                 gt_disp = apply_disparity_cu(disp.unsqueeze(1),-disp.type(torch.int))
 
-            mask = (gt_disp > 0.) & (gt_disp < args.max_disp/256.)
+            mask = (gt_disp > 0.) & (gt_disp < args.max_disp)
 
             if args.load_pseudo_gt:
                 pseudo_gt_disp = sample['pseudo_disp'].to(device)
-                pseudo_mask = (pseudo_gt_disp > 0.) & (pseudo_gt_disp < args.max_disp/256.) & (~mask)  # inverse mask
+                pseudo_mask = (pseudo_gt_disp > 0.) & (pseudo_gt_disp < args.max_disp) & (~mask)  # inverse mask
 
             if not mask.any():
                 continue
@@ -254,12 +254,12 @@ class Model(object):
 
             if args.dataset_name=='custom_dataset_full':
                 temp = gt_disp*256.
-                baseline = torch.mean(sample['baseline']).to(device)
-                intrinsic = torch.mean(sample['intrinsic'][:,0][:,0]).to(device)
-                disp = (baseline*1000*intrinsic)/temp
+                baseline = torch.mean(sample['baseline']).to(self.device)
+                intrinsic = torch.mean(sample['intrinsic'][:,0][:,0]).to(self.device)
+                disp = (baseline*1000*intrinsic)/temp  # maybe divide by 2 later
                 gt_disp = apply_disparity_cu(disp.unsqueeze(1),-disp.type(torch.int))
 
-            mask = (gt_disp > 0.) & (gt_disp < args.max_disp/256.)
+            mask = (gt_disp > 0.) & (gt_disp < args.max_disp)
 
 
             if not mask.any():
@@ -287,10 +287,10 @@ class Model(object):
             baseline = 0.055
             intrinsic = torch.tensor([[1387.095, 0.0, 960.0], [0.0, 1387.095, 540.0], [0.0, 0.0, 1.0]]).to(self.device)
 
-            gt_depth = (baseline*1000*intrinsic[0][0])/gt_disp/256./(16./3.)
+            gt_depth = (baseline*1000*intrinsic[0][0]/2)/gt_disp/256./(16./3.)
             gt_depth[gt_depth==inf]=0
 
-            pred_depth = (baseline*1000*intrinsic[0][0])/pred_disp/256./(16./3.)
+            pred_depth = (baseline*1000*intrinsic[0][0]/2)/pred_disp/256./(16./3.)
             pred_depth[pred_depth==inf]=0
             abs = F.l1_loss(gt_depth[mask], pred_depth[mask], reduction='mean')
 

@@ -14,7 +14,7 @@ def convert_file(original, intrinsic, baseline, save):
     data = np.asarray(image)
 
     new_image = np.copy(data)
-    new_image = (baseline*1000*intrinsic[0][0])/new_image
+    new_image = (baseline*1000*intrinsic[0][0]/2)/new_image
     new_image[new_image== inf] = 0
 
     # save as 16 bit black and white image
