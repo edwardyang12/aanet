@@ -19,11 +19,11 @@ def bad(d_est, d_gt, mask, threshold=1, use_np=False):
     bad = []
     if use_np:
         e = np.abs(d_gt - d_est)
-        err_mask = (e>3*threshold/16.)
+        err_mask = (e>threshold)
         bad = np.mean(err_mask.astype('float'))
     else:
         e = torch.abs(d_gt - d_est)
-        err_mask = (e>3*threshold/16.)
+        err_mask = (e>threshold)
         bad = torch.mean(err_mask.float())
     return bad
 
@@ -48,7 +48,7 @@ def d1_metric(d_est, d_gt, mask, use_np=False):
         e = np.abs(d_gt - d_est)
     else:
         e = torch.abs(d_gt - d_est)
-    err_mask = (e > 3/16.) & (e / d_gt > 0.05)
+    err_mask = (e > 3) & (e / d_gt > 0.05)
 
     if use_np:
         mean = np.mean(err_mask.astype('float'))
@@ -65,7 +65,7 @@ def thres_metric(d_est, d_gt, mask, thres, use_np=False):
         e = np.abs(d_gt - d_est)
     else:
         e = torch.abs(d_gt - d_est)
-    err_mask = e > 3*thres/16.
+    err_mask = e > thres # don't need 3/16 anymore?
 
     if use_np:
         mean = np.mean(err_mask.astype('float'))

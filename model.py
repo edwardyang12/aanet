@@ -51,11 +51,21 @@ class Model(object):
         self.train_writer.add_scalar('offset_lr', offset_lr, self.epoch + 1)
 
         last_print_time = time.time()
+        baseline = 0.055
+        intrinsic =[[1387.095, 0.0, 960.0], [0.0, 1387.095, 540.0], [0.0, 0.0, 1.0]]
+
 
         for i, sample in enumerate(train_loader):
             left = sample['left'].to(device)  # [B, 3, H, W]
             right = sample['right'].to(device)
             gt_disp = sample['disp'].to(device)  # [B, H, W]
+            gt_depth = []
+
+            if args.dataset_name=='custom_dataset': # going to be depthL_fromR_down if from  custom_dataset
+                gt_disp_1 = (baseline*1000*intrinsic[0][0]/2)/(gt_disp*256.)
+                gt_disp_1[gt_disp_1==inf]=0
+                gt_depth = gt_disp*256.
+                gt_disp = gt_disp_1/256.
 
             if args.dataset_name=='custom_dataset_full':
                 temp = gt_disp*256.
@@ -64,7 +74,7 @@ class Model(object):
                 disp = (baseline*1000*intrinsic)/temp
                 gt_disp = apply_disparity_cu(disp.unsqueeze(1),-disp.type(torch.int))
 
-            mask = (gt_disp > 0.) & (gt_disp < args.max_disp)
+            mask = (gt_disp_1 > 0.) & (gt_disp_1 < args.max_disp)
 
             if args.load_pseudo_gt:
                 pseudo_gt_disp = sample['pseudo_disp'].to(device)
@@ -251,6 +261,13 @@ class Model(object):
             left = sample['left'].to(self.device)  # [B, 3, H, W]
             right = sample['right'].to(self.device)
             gt_disp = sample['disp'].to(self.device)  # [B, H, W]
+            gt_depth = []
+
+            if args.dataset_name=='custom_dataset': # going to be depthL_fromR_down if from  custom_dataset
+                gt_disp_1 = (baseline*1000*intrinsic[0][0]/2)/(gt_disp*256.)
+                gt_disp_1[gt_disp_1==inf]=0
+                gt_depth = gt_disp*256.
+                gt_disp = gt_disp_1/256.
 
             if args.dataset_name=='custom_dataset_full':
                 temp = gt_disp*256.
@@ -284,14 +301,9 @@ class Model(object):
             bad1 = bad(pred_disp, gt_disp, mask)
             bad2 = bad(pred_disp, gt_disp, mask, threshold=2)
 
-            baseline = 0.055
-            intrinsic = torch.tensor([[1387.095, 0.0, 960.0], [0.0, 1387.095, 540.0], [0.0, 0.0, 1.0]]).to(self.device)
-
-            gt_depth = (baseline*1000*intrinsic[0][0]/2)/gt_disp/256./(16./3.)
-            gt_depth[gt_depth==inf]=0
-
             pred_depth = (baseline*1000*intrinsic[0][0]/2)/pred_disp/256./(16./3.)
             pred_depth[pred_depth==inf]=0
+
             abs = F.l1_loss(gt_depth[mask], pred_depth[mask], reduction='mean')
 
             mm2 = mm_error(pred_depth, gt_depth,mask)
