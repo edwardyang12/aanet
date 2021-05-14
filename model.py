@@ -59,7 +59,9 @@ class Model(object):
 
             if args.dataset_name=='custom_dataset_full':
                 temp = gt_disp*256.
-                disp = (sample['baseline']*1000*sample['intrinsic'][0][0])/temp
+                baseline = torch.mean(sample['baseline']).to(device)
+                intrinsic = torch.mean(sample['intrinsic'][:,0][:,0]).to(device)
+                disp = (baseline*1000*intrinsic)/temp
                 gt_disp = apply_disparity_cu(disp,-disp.type(torch.int))
 
             mask = (gt_disp > 0.) & (gt_disp < args.max_disp/256.)
@@ -252,7 +254,9 @@ class Model(object):
 
             if args.dataset_name=='custom_dataset_full':
                 temp = gt_disp*256.
-                disp = (sample['baseline']*1000*sample['intrinsic'][0][0])/temp
+                baseline = torch.mean(sample['baseline']).to(device)
+                intrinsic = torch.mean(sample['intrinsic'][:,0][:,0]).to(device)
+                disp = (baseline*1000*intrinsic)/temp
                 gt_disp = apply_disparity_cu(disp,-disp.type(torch.int))
 
             mask = (gt_disp > 0.) & (gt_disp < args.max_disp/256.)
