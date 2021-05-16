@@ -254,6 +254,9 @@ class Model(object):
         num_imgs = 0
         valid_samples = 0
 
+        baseline = 0.055
+        intrinsic =[[1387.095, 0.0, 960.0], [0.0, 1387.095, 540.0], [0.0, 0.0, 1.0]]
+
         for i, sample in enumerate(val_loader):
             if i % 100 == 0:
                 logger.info('=> Validating %d/%d' % (i, num_samples))
