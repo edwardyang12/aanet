@@ -301,7 +301,7 @@ class Model(object):
             bad1 = bad(pred_disp, gt_disp, mask)
             bad2 = bad(pred_disp, gt_disp, mask, threshold=2)
 
-            pred_depth = (baseline*1000*intrinsic[0][0]/2)/pred_disp/256./(16./3.)
+            pred_depth = (baseline*1000*intrinsic[0][0]/2)/pred_disp/256.
             pred_depth[pred_depth==inf]=0
 
             abs = F.l1_loss(gt_depth[mask], pred_depth[mask], reduction='mean')

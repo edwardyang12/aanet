@@ -33,11 +33,11 @@ def mm_error(depth_est, depth_gt, mask, threshold=2, use_np=False):
     bad = []
     if use_np:
         e = np.abs(d_gt - d_est)
-        err_mask = (e>threshold*16./3.)
+        err_mask = (e>threshold)
         bad = np.mean(err_mask.astype('float'))
     else:
         e = torch.abs(d_gt - d_est)
-        err_mask = (e>threshold*16./3.)
+        err_mask = (e>threshold)
         bad = torch.mean(err_mask.float())
     return bad
 
