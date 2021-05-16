@@ -64,15 +64,24 @@ class Model(object):
             if args.dataset_name=='custom_dataset': # going to be depthL_fromR_down if from  custom_dataset
                 gt_disp_1 = (baseline*1000*intrinsic[0][0]/2)/(gt_disp*256.)
                 gt_disp_1[gt_disp_1==inf]=0
-                gt_depth = gt_disp*256.
+                gt_depth = gt_disp
                 gt_disp = gt_disp_1/256.
 
             if args.dataset_name=='custom_dataset_full':
                 temp = gt_disp*256.
-                baseline = torch.mean(sample['baseline']).to(self.device)
-                intrinsic = torch.mean(sample['intrinsic'][:,0][:,0]).to(self.device)
-                disp = (baseline*1000*intrinsic)/temp
-                gt_disp = apply_disparity_cu(disp.unsqueeze(1),-disp.type(torch.int))
+                for x in range(left.shape[0]):
+                    baseline = sample['baseline'][x].to(self.device)
+                    intrinsic = sample['intrinsic'][x].to(self.device)
+                    temp[x] = (baseline*1000*intrinsic/2)/temp[x]
+                    temp[x][temp==inf] = 0
+                gt_disp = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
+                gt_depth = gt_disp
+                gt_disp = gt_disp/256.
+                for x in range(left.shape[0]):
+                    baseline = sample['baseline'][x].to(self.device)
+                    intrinsic = sample['intrinsic'][x].to(self.device)
+                    gt_depth[x] = (baseline*1000*intrinsic/2)/gt_depth[x]
+                    gt_depth[x][gt_depth==inf] = 0
 
             mask = (gt_disp_1 > 0.) & (gt_disp_1 < args.max_disp)
 
@@ -269,15 +278,24 @@ class Model(object):
             if args.dataset_name=='custom_dataset': # going to be depthL_fromR_down if from  custom_dataset
                 gt_disp_1 = (baseline*1000*intrinsic[0][0]/2)/(gt_disp*256.)
                 gt_disp_1[gt_disp_1==inf]=0
-                gt_depth = gt_disp*256.
+                gt_depth = gt_disp
                 gt_disp = gt_disp_1/256.
 
             if args.dataset_name=='custom_dataset_full':
                 temp = gt_disp*256.
-                baseline = torch.mean(sample['baseline']).to(self.device)
-                intrinsic = torch.mean(sample['intrinsic'][:,0][:,0]).to(self.device)
-                disp = (baseline*1000*intrinsic)/temp  # maybe divide by 2 later
-                gt_disp = apply_disparity_cu(disp.unsqueeze(1),-disp.type(torch.int))
+                for x in range(left.shape[0]):
+                    baseline = sample['baseline'][x].to(self.device)
+                    intrinsic = sample['intrinsic'][x].to(self.device)
+                    temp[x] = (baseline*1000*intrinsic/2)/temp[x]
+                    temp[x][temp==inf] = 0
+                gt_disp = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
+                gt_depth = gt_disp
+                gt_disp = gt_disp/256.
+                for x in range(left.shape[0]):
+                    baseline = sample['baseline'][x].to(self.device)
+                    intrinsic = sample['intrinsic'][x].to(self.device)
+                    gt_depth[x] = (baseline*1000*intrinsic/2)/gt_depth[x]
+                    gt_depth[x][gt_depth==inf] = 0
 
             mask = (gt_disp > 0.) & (gt_disp < args.max_disp)
 
@@ -304,7 +322,7 @@ class Model(object):
             bad1 = bad(pred_disp, gt_disp, mask)
             bad2 = bad(pred_disp, gt_disp, mask, threshold=2)
 
-            pred_depth = (baseline*1000*intrinsic[0][0]/2)/pred_disp/256.
+            pred_depth = (baseline*1000*intrinsic[0][0]/2)/pred_disp
             pred_depth[pred_depth==inf]=0
 
             abs = F.l1_loss(gt_depth[mask], pred_depth[mask], reduction='mean')
