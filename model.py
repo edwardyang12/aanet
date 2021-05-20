@@ -73,7 +73,7 @@ class Model(object):
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
                     temp[x] = (baseline*1000*intrinsic[0][0]/2)/temp[x]
-                    temp[x][temp==inf] = 0
+                    temp[x][temp[x]==inf] = 0
                 gt_disp = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
                 gt_depth = gt_disp*256.
                 gt_disp = gt_disp/256.
@@ -81,7 +81,7 @@ class Model(object):
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
                     gt_depth[x] = (baseline*1000*intrinsic/2)/gt_depth[x]
-                    gt_depth[x][gt_depth==inf] = 0
+                    gt_depth[x][gt_depth[x]==inf] = 0
 
             mask = (gt_disp_1 > 0.) & (gt_disp_1 < args.max_disp)
 
@@ -288,7 +288,7 @@ class Model(object):
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
                     temp[x] = (baseline*1000*intrinsic[0][0]/2)/temp[x]
-                    temp[x][temp==inf] = 0
+                    temp[x][temp[x]==inf] = 0
                 gt_disp = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
                 gt_depth = gt_disp*256.
                 gt_disp = gt_disp/256.
@@ -296,7 +296,7 @@ class Model(object):
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
                     gt_depth[x] = (baseline*1000*intrinsic/2)/gt_depth[x]
-                    gt_depth[x][gt_depth==inf] = 0
+                    gt_depth[x][gt_depth[x]==inf] = 0
 
             mask_disp = (gt_disp > 0.) & (gt_disp < args.max_disp)
 

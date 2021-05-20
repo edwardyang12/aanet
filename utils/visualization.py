@@ -43,7 +43,7 @@ def depth_error_img(D_est_tensor, D_gt_tensor, abs_thres=1., dilate_radius=1):
     D_est_np = D_est_tensor.detach().cpu().numpy()
     B, H, W = D_gt_np.shape
     # valid mask
-    mask = D_gt_np > 0
+    mask = (D_gt_np > 0) & (D_gt_np < 2000)
     # error in percentage. When error <= 1, the pixel is valid since <= 3px & 5%
     error = np.abs(D_gt_np - D_est_np)
     error[np.logical_not(mask)] = 0
