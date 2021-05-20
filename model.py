@@ -75,6 +75,7 @@ class Model(object):
                     temp[x] = (baseline*1000*intrinsic[0][0]/2)/temp[x]
                     temp[x][temp[x]==inf] = 0
                 gt_disp = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
+                gt_disp = torch.squeeze(gt_disp)
                 print(gt_disp.shape)
                 gt_depth = gt_disp*256.
                 gt_disp = gt_disp/256.
@@ -292,6 +293,7 @@ class Model(object):
                     temp[x] = (baseline*1000*intrinsic[0][0]/2)/temp[x]
                     temp[x][temp[x]==inf] = 0
                 gt_disp = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
+                gt_disp = torch.squeeze(gt_disp)
                 gt_depth = gt_disp*256.
                 gt_disp = gt_disp/256.
                 for x in range(left.shape[0]):
