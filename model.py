@@ -83,7 +83,7 @@ class Model(object):
                     gt_depth[x] = (baseline*1000*intrinsic[0][0]/2)/gt_depth[x]
                     gt_depth[x][gt_depth[x]==inf] = 0
 
-            mask = (gt_disp_1 > 0.) & (gt_disp_1 < args.max_disp)
+            mask = (gt_disp > 0.) & (gt_disp < args.max_disp)
 
             if args.load_pseudo_gt:
                 pseudo_gt_disp = sample['pseudo_disp'].to(device)
