@@ -61,10 +61,10 @@ class Model(object):
             gt_disp = sample['disp'].to(device)  # [B, H, W]
             gt_depth = []
 
-            if args.dataset_name=='custom_dataset': # going to be depthL_fromR_down if from  custom_dataset
+            if args.dataset_name=='custom_dataset': # going to be depthL_fromR_down if from custom_dataset
                 gt_disp_1 = (baseline*1000*intrinsic[0][0]/2)/(gt_disp*256.)
                 gt_disp_1[gt_disp_1==inf]=0
-                gt_depth = gt_disp
+                gt_depth = gt_disp*256.
                 gt_disp = gt_disp_1/256.
 
             if args.dataset_name=='custom_dataset_full':
@@ -72,10 +72,10 @@ class Model(object):
                 for x in range(left.shape[0]):
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
-                    temp[x] = (baseline*1000*intrinsic/2)/temp[x]
+                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/temp[x]
                     temp[x][temp==inf] = 0
                 gt_disp = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
-                gt_depth = gt_disp
+                gt_depth = gt_disp*256.
                 gt_disp = gt_disp/256.
                 for x in range(left.shape[0]):
                     baseline = sample['baseline'][x].to(self.device)
@@ -274,11 +274,12 @@ class Model(object):
             right = sample['right'].to(self.device)
             gt_disp = sample['disp'].to(self.device)  # [B, H, W]
             gt_depth = []
+            pred_disp = []
 
             if args.dataset_name=='custom_dataset': # going to be depthL_fromR_down if from  custom_dataset
                 gt_disp_1 = (baseline*1000*intrinsic[0][0]/2)/(gt_disp*256.)
                 gt_disp_1[gt_disp_1==inf]=0
-                gt_depth = gt_disp
+                gt_depth = gt_disp*256.
                 gt_disp = gt_disp_1/256.
 
             if args.dataset_name=='custom_dataset_full':
@@ -286,10 +287,10 @@ class Model(object):
                 for x in range(left.shape[0]):
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
-                    temp[x] = (baseline*1000*intrinsic/2)/temp[x]
+                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/temp[x]
                     temp[x][temp==inf] = 0
                 gt_disp = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
-                gt_depth = gt_disp
+                gt_depth = gt_disp*256.
                 gt_disp = gt_disp/256.
                 for x in range(left.shape[0]):
                     baseline = sample['baseline'][x].to(self.device)
@@ -322,8 +323,11 @@ class Model(object):
             bad1 = bad(pred_disp, gt_disp, mask)
             bad2 = bad(pred_disp, gt_disp, mask, threshold=2)
 
-            pred_depth = (baseline*1000*intrinsic[0][0]/2)/pred_disp
+            pred_depth = (baseline*1000*intrinsic[0][0]/2)/(pred_disp*256.)
             pred_depth[pred_depth==inf]=0
+
+            print(pred_depth[mask].unique())
+            print(gt_depth[mask].unique())
 
             abs = F.l1_loss(gt_depth[mask], pred_depth[mask], reduction='mean')
 
