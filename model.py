@@ -300,8 +300,7 @@ class Model(object):
 
             mask_disp = (gt_disp > 0.) & (gt_disp < args.max_disp)
 
-
-            if not mask.any():
+            if not mask_disp.any():
                 continue
 
             valid_samples += 1
