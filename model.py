@@ -298,7 +298,7 @@ class Model(object):
                     gt_depth[x] = (baseline*1000*intrinsic/2)/gt_depth[x]
                     gt_depth[x][gt_depth==inf] = 0
 
-            mask = (gt_disp > 0.) & (gt_disp < args.max_disp)
+            mask_disp = (gt_disp > 0.) & (gt_disp < args.max_disp)
 
 
             if not mask.any():
@@ -317,23 +317,24 @@ class Model(object):
                                           mode='bilinear', align_corners=False) * (gt_disp.size(-1) / pred_disp.size(-1))
                 pred_disp = pred_disp.squeeze(1)  # [B, H, W]
 
-            epe = F.l1_loss(gt_disp[mask], pred_disp[mask], reduction='mean')
-            d1 = d1_metric(pred_disp, gt_disp, mask)
+            epe = F.l1_loss(gt_disp[mask_disp], pred_disp[mask_disp], reduction='mean')
+            d1 = d1_metric(pred_disp, gt_disp, mask_disp)
 
-            bad1 = bad(pred_disp, gt_disp, mask)
-            bad2 = bad(pred_disp, gt_disp, mask, threshold=2)
+            bad1 = bad(pred_disp, gt_disp, mask_disp)
+            bad2 = bad(pred_disp, gt_disp, mask_disp, threshold=2)
 
             pred_depth = (baseline*1000*intrinsic[0][0]/2)/(pred_disp*256.)
             pred_depth[pred_depth==inf]=0
 
-            print(pred_depth[mask].unique())
-            print(gt_depth[mask].unique())
+            mask_depth =(gt_depth > 0.) & (gt_depth < 2000)
+            print(pred_depth[mask_depth].unique())
+            print(gt_depth[mask_depth].unique())
 
-            abs = F.l1_loss(gt_depth[mask], pred_depth[mask], reduction='mean')
+            abs = F.l1_loss(gt_depth[mask_depth], pred_depth[mask_depth], reduction='mean')
 
-            mm2 = mm_error(pred_depth, gt_depth,mask)
-            mm4 = mm_error(pred_depth, gt_depth,mask, threshold=4)
-            mm8 = mm_error(pred_depth, gt_depth,mask, threshold=8)
+            mm2 = mm_error(pred_depth, gt_depth,mask_depth)
+            mm4 = mm_error(pred_depth, gt_depth,mask_depth, threshold=4)
+            mm8 = mm_error(pred_depth, gt_depth,mask_depth, threshold=8)
 
             # thres1 = thres_metric(pred_disp, gt_disp, mask, 1.0)
             # thres2 = thres_metric(pred_disp, gt_disp, mask, 2.0)
