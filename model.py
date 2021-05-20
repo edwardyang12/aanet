@@ -75,6 +75,7 @@ class Model(object):
                     temp[x] = (baseline*1000*intrinsic[0][0]/2)/temp[x]
                     temp[x][temp[x]==inf] = 0
                 gt_disp = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
+                print(gt_disp.shape)
                 gt_depth = gt_disp*256.
                 gt_disp = gt_disp/256.
                 for x in range(left.shape[0]):
@@ -90,6 +91,7 @@ class Model(object):
                 pseudo_mask = (pseudo_gt_disp > 0.) & (pseudo_gt_disp < args.max_disp) & (~mask)  # inverse mask
 
             if not mask.any():
+                print("here")
                 continue
 
             pred_disp_pyramid = self.aanet(left, right)  # list of H/12, H/6, H/3, H/2, H
