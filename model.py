@@ -337,6 +337,8 @@ class Model(object):
             mm4 = mm_error(pred_depth, gt_depth,mask_depth, threshold=4)
             mm8 = mm_error(pred_depth, gt_depth,mask_depth, threshold=8)
 
+            gt_depth[gt_depth>2000/256.]=0
+
             # thres1 = thres_metric(pred_disp, gt_disp, mask, 1.0)
             # thres2 = thres_metric(pred_disp, gt_disp, mask, 2.0)
             # thres3 = thres_metric(pred_disp, gt_disp, mask, 3.0)
