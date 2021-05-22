@@ -81,6 +81,8 @@ class Model(object):
                 gt_disp = temp/256.
 
             mask = (gt_disp > 0.) & (gt_disp < args.max_disp)
+            print(gt_depth[mask].unique())
+            print(gt_disp[mask].unique())
 
             if args.load_pseudo_gt:
                 pseudo_gt_disp = sample['pseudo_disp'].to(device)
