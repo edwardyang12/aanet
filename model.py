@@ -69,7 +69,7 @@ class Model(object):
 
             if args.dataset_name=='custom_dataset_full':
                 temp = gt_disp*256.
-                gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
+                gt_depth = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
                 gt_depth = torch.squeeze(gt_depth)
                 for x in range(left.shape[0]):
                     gt_depth[x][gt_depth[x]==inf] = 0
@@ -81,8 +81,6 @@ class Model(object):
                 gt_disp = temp/256.
 
             mask = (gt_disp > 0.) & (gt_disp < args.max_disp)
-            print(gt_depth[mask].unique())
-            print(gt_disp[mask].unique())
 
             if args.load_pseudo_gt:
                 pseudo_gt_disp = sample['pseudo_disp'].to(device)
@@ -283,7 +281,7 @@ class Model(object):
 
             if args.dataset_name=='custom_dataset_full':
                 temp = gt_disp*256.
-                gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
+                gt_depth = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
                 gt_depth = torch.squeeze(gt_depth)
                 for x in range(left.shape[0]):
                     gt_depth[x][gt_depth[x]==inf] = 0
