@@ -68,14 +68,14 @@ class Model(object):
                 gt_disp = gt_disp_1/256.
 
             if args.dataset_name=='custom_dataset_full':
-                temp = gt_disp*256.
-                gt_depth = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
+                temp = gt_disp
+                gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
                 gt_depth = torch.squeeze(gt_depth)
                 for x in range(left.shape[0]):
                     gt_depth[x][gt_depth[x]==inf] = 0
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
-                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/gt_depth[x]
+                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x]*256.)
                     temp[x][temp[x]==inf] = 0
 
                 gt_disp = temp/256.
@@ -280,14 +280,14 @@ class Model(object):
                 gt_disp = gt_disp_1/256.
 
             if args.dataset_name=='custom_dataset_full':
-                temp = gt_disp*256.
-                gt_depth = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
+                temp = gt_disp
+                gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
                 gt_depth = torch.squeeze(gt_depth)
                 for x in range(left.shape[0]):
                     gt_depth[x][gt_depth[x]==inf] = 0
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
-                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/gt_depth[x]
+                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x]*256.)
                     temp[x][temp[x]==inf] = 0
 
                 gt_disp = temp/256.
@@ -320,8 +320,6 @@ class Model(object):
             pred_depth[pred_depth==inf]=0
 
             mask_depth =(gt_depth > 0.) & (gt_depth < 2000/256.)
-            print(pred_depth[mask_depth].unique())
-            print(gt_depth[mask_depth].unique())
 
             abs = F.l1_loss(gt_depth[mask_depth], pred_depth[mask_depth], reduction='mean')
 
