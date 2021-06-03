@@ -333,8 +333,18 @@ class Model(object):
             bad1 = bad(pred_disp, gt_disp, mask_disp)
             bad2 = bad(pred_disp, gt_disp, mask_disp, threshold=2)
 
-            pred_depth = (baseline*1000*intrinsic[0][0]/2)/(pred_disp)
-            pred_depth[pred_depth==inf]=0
+            pred_depth = []
+            if(args.dataset_name == 'custom_dataset_full'):
+                temp = gt_disp
+                for x in range(left.shape[0]):
+                    baseline = sample['baseline'][x].to(self.device)
+                    intrinsic = sample['intrinsic'][x].to(self.device)
+                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(pred_disp[x])
+                    temp[x][temp[x]==inf] = 0
+                pred_depth = temp
+            else:
+                pred_depth = (baseline*1000*intrinsic[0][0]/2)/(pred_disp)
+                pred_depth[pred_depth==inf]=0
 
             mask_depth = (gt_depth > 0.) & (gt_depth < 2000)
 
@@ -368,7 +378,7 @@ class Model(object):
                 if args.evaluate_only:
 
                     im = (pred_depth[0]).detach().cpu().numpy().astype(np.uint16)
-                    if not os.path.isdir('/cephfs/edward/depths'+x):
+                    if not os.path.isdir('/cephfs/edward/depths'+str(x)):
                         os.mkdir('/cephfs/edward/depths')
                     imageio.imwrite('/cephfs/edward/depths/'+str(i)+".png",im)
 
