@@ -156,7 +156,7 @@ class Model(object):
                              disp_loss.item()))
 
             if self.num_iter % args.summary_freq == 0:
-                img_summary = dict()
+                img_summary = {}
                 img_summary['left'] = left
                 img_summary['right'] = right
                 img_summary['gt_disp'] = gt_disp
@@ -375,12 +375,12 @@ class Model(object):
                     im = (gt_depth[0]).detach().cpu().numpy().astype(np.uint16)
                     imageio.imwrite('/cephfs/edward/depths/'+str(i)+"gt.png",im)
 
-                    dict = {'baseline': sample['baseline'][x],'intrinsic' :sample['intrinsic'][x]}
-                    filename = 'meta.pkl'
+                    info = {'baseline': sample['baseline'][x],'intrinsic' :sample['intrinsic'][x]}
+                    filename = '/cephfs/edward/depths/meta' + str(i) + '.pkl'
                     with open(filename, 'wb') as f:
-                        pickle.dump(dict, f)
+                        pickle.dump(info, f)
 
-                img_summary = dict()
+                img_summary = {}
                 img_summary['disp_error'] = disp_error_img(pred_disp, gt_disp)
                 img_summary['depth_error'] = depth_error_img(pred_depth, gt_depth)
                 img_summary['left'] = left
