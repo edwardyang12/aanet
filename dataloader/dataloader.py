@@ -61,11 +61,13 @@ class StereoDataset(Dataset):
         }
 
         test_sim = {
-            'train': 'filenames/custom_train_sim.txt',
+            'train': 'filenames/custom_test_sim.txt',
+            'test': 'filenames/custom_test_sim.txt',
         }
 
         test_real = {
-            'train': 'filenames/custom_train_real.txt',
+            'train': 'filenames/custom_test_real.txt',
+            'test': 'filenames/custom_test_real.txt',
         }
 
         dataset_name_dict = {

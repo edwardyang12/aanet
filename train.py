@@ -92,8 +92,8 @@ logger = utils.get_logger()
 utils.check_path(args.checkpoint_dir)
 utils.save_args(args)
 
-filename = 'command_test.txt' if args.mode == 'test' else 'command_train.txt'
-utils.save_command(args.checkpoint_dir, filename)
+# filename = 'command_test.txt' if args.mode == 'test' else 'command_train.txt'
+# utils.save_command(args.checkpoint_dir, filename)
 
 
 def main():
