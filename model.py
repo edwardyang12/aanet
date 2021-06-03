@@ -10,7 +10,8 @@ from metric import d1_metric, thres_metric, bad, mm_error
 from math import inf
 from warp_ops import apply_disparity_cu
 
-from PIL import Image
+import imageio
+import numpy as np
 
 class Model(object):
     def __init__(self, args, logger, optimizer, aanet, device, start_iter=0, start_epoch=0,
@@ -26,8 +27,8 @@ class Model(object):
         self.best_epe = 999. if best_epe is None else best_epe
         self.best_epoch = -1 if best_epoch is None else best_epoch
 
-        if not args.evaluate_only:
-            self.train_writer = SummaryWriter(self.args.checkpoint_dir)
+
+        self.train_writer = SummaryWriter(self.args.checkpoint_dir)
 
     def train(self, train_loader):
         args = self.args
@@ -66,10 +67,10 @@ class Model(object):
             if args.dataset_name=='custom_dataset': # going to be depthL_fromR_down if from  custom_dataset
                 gt_disp_1 = (baseline*1000*intrinsic[0][0]/2)/(gt_disp*256.)
                 gt_disp_1[gt_disp_1==inf]=0
-                gt_depth = gt_disp
-                gt_disp = gt_disp_1/256.
+                gt_depth = gt_disp*256.
+                gt_disp = gt_disp_1
 
-            if args.dataset_name=='custom_dataset_full':
+            if(args.dataset_name == 'custom_dataset_full'):
                 temp = gt_disp
                 gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
                 gt_depth = torch.squeeze(gt_depth)
@@ -278,10 +279,10 @@ class Model(object):
             if args.dataset_name=='custom_dataset': # going to be depthL_fromR_down if from  custom_dataset
                 gt_disp_1 = (baseline*1000*intrinsic[0][0]/2)/(gt_disp*256.)
                 gt_disp_1[gt_disp_1==inf]=0
-                gt_depth = gt_disp
-                gt_disp = gt_disp_1/256.
+                gt_depth = gt_disp*256.
+                gt_disp = gt_disp_1
 
-            if args.dataset_name=='custom_dataset_full':
+            if(args.dataset_name == 'custom_dataset_full'):
                 temp = gt_disp
                 gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
                 gt_depth = torch.squeeze(gt_depth)
@@ -291,7 +292,20 @@ class Model(object):
                     intrinsic = sample['intrinsic'][x].to(self.device)
                     temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x]*256.)
                     temp[x][temp[x]==inf] = 0
+                gt_disp = temp/256.
 
+            if(args.dataset_name == 'custom_dataset_sim' or
+                args.dataset_name == 'custom_dataset_real'):
+                temp = gt_disp
+                gt_depth = temp
+                gt_depth = torch.squeeze(gt_depth)
+                gt_depth = torch.unsqueeze(gt_depth,0)
+                for x in range(left.shape[0]):
+                    gt_depth[x][gt_depth[x]==inf] = 0
+                    baseline = sample['baseline'][x].to(self.device)
+                    intrinsic = sample['intrinsic'][x].to(self.device)
+                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x]*256.)
+                    temp[x][temp[x]==inf] = 0
                 gt_disp = temp/256.
 
             mask_disp = (gt_disp > 0.) & (gt_disp < args.max_disp)
@@ -318,10 +332,10 @@ class Model(object):
             bad1 = bad(pred_disp, gt_disp, mask_disp)
             bad2 = bad(pred_disp, gt_disp, mask_disp, threshold=2)
 
-            pred_depth = (baseline*1000*intrinsic[0][0]/2)/(pred_disp*256.)/256.
+            pred_depth = (baseline*1000*intrinsic[0][0]/2)/(pred_disp)
             pred_depth[pred_depth==inf]=0
 
-            mask_depth =(gt_depth > 0.) & (gt_depth < 2000/256.)
+            mask_depth = (gt_depth > 0.) & (gt_depth < 2000)
 
             abs = F.l1_loss(gt_depth[mask_depth], pred_depth[mask_depth], reduction='mean')
 
@@ -329,7 +343,7 @@ class Model(object):
             mm4 = mm_error(pred_depth, gt_depth,mask_depth, threshold=4)
             mm8 = mm_error(pred_depth, gt_depth,mask_depth, threshold=8)
 
-            pred_depth[pred_depth>2000/256.]=0
+            pred_depth[pred_depth>2000]=0
 
             # thres1 = thres_metric(pred_disp, gt_disp, mask, 1.0)
             # thres2 = thres_metric(pred_disp, gt_disp, mask, 2.0)
@@ -351,9 +365,14 @@ class Model(object):
 
             if i in [num_samples // 4, num_samples // 2, num_samples // 4 * 3]:
                 if args.evaluate_only:
-                    im = Image.fromarray(pred_depth)
-                    os.mkdir('/cephfs/edward/depths')
-                    im.save('/cephfs/edward/depths/'+i+".png")
+
+                    im = (pred_depth[0]*256).detach().cpu().numpy().astype(np.uint16)
+                    if not os.path.isdir('/cephfs/edward/depths'+x):
+                        os.mkdir('/cephfs/edward/depths')
+                    imageio.imwrite('/cephfs/edward/depths/'+str(i)+".png",im)
+
+                    im = (gt_depth[0]*256).detach().cpu().numpy().astype(np.uint16)
+                    imageio.imwrite('/cephfs/edward/depths/'+str(i)+"gt.png",im)
 
                 img_summary = dict()
                 img_summary['disp_error'] = disp_error_img(pred_disp, gt_disp)

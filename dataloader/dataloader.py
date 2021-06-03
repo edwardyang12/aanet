@@ -148,7 +148,9 @@ class StereoDataset(Dataset):
         if self.transform is not None:
             sample = self.transform(sample)
 
-        if(self.dataset_name == 'custom_dataset_full'):
+        if(self.dataset_name == 'custom_dataset_full' or
+            self.dataset_name == 'custom_dataset_sim' or
+            self.dataset_name == 'custom_dataset_real'):
             temp = pd.read_pickle(sample_path['meta'])
             sample['intrinsic'] = temp['intrinsic']
             sample['baseline'] = abs((temp['extrinsic_l']-temp['extrinsic_r'])[0][3])
