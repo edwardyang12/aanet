@@ -72,9 +72,9 @@ class Model(object):
                 gt_disp = gt_disp_1
 
             if(args.dataset_name == 'custom_dataset_full'):
-                temp = gt_disp*256.
+                temp = gt_disp
                 gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
-                gt_depth = torch.squeeze(gt_depth)
+                gt_depth = torch.squeeze(gt_depth)*256.
                 for x in range(left.shape[0]):
                     gt_depth[x][gt_depth[x]==inf] = 0
                     baseline = sample['baseline'][x].to(self.device)
@@ -284,9 +284,9 @@ class Model(object):
                 gt_disp = gt_disp_1
 
             if(args.dataset_name == 'custom_dataset_full'):
-                temp = gt_disp*256.
+                temp = gt_disp
                 gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
-                gt_depth = torch.squeeze(gt_depth)
+                gt_depth = torch.squeeze(gt_depth)*256.
                 for x in range(left.shape[0]):
                     gt_depth[x][gt_depth[x]==inf] = 0
                     baseline = sample['baseline'][x].to(self.device)
@@ -297,9 +297,9 @@ class Model(object):
 
             if(args.dataset_name == 'custom_dataset_sim' or
                 args.dataset_name == 'custom_dataset_real'):
-                temp = gt_disp*256.
+                temp = gt_disp
                 gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
-                gt_depth = torch.squeeze(gt_depth)
+                gt_depth = torch.squeeze(gt_depth)*256.
                 gt_depth = torch.unsqueeze(gt_depth,0)
                 for x in range(left.shape[0]):
                     gt_depth[x][gt_depth[x]==inf] = 0
