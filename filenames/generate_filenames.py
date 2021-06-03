@@ -179,15 +179,16 @@ def gen_own_data_real():
                 x = x.split()[0]
             if x[0]!='1' and x[0]!='0':
                 continue
-            left = x + '/real/1024_irL_real_1080_half.png '
+            left = '/cephfs/edward/'+x + '/real/1024_irL_real_1080_half.png '
 
-            image = Image.open(data_dir + '/' x + '/1024_irL_real_1080.png')
-            new_image = image.resize((960,540))
-            os.mkdir('/cephfs/edward/'+x)
+            image = Image.open(data_dir + '/' + x + '/1024_irL_real_1080.png')
+            new_image = image.resize((960,540
+            if not os.path.isdir('/cephfs/edward/'+x):
+                os.mkdir('/cephfs/edward/'+x)
             os.mkdir('/cephfs/edward/'+x+'/real/')
             new_image.save('/cephfs/edward/'+x +'/real/1024_irL_real_1080_half.png')
 
-            right = x + '/real/1024_irR_real_1080_half.png '
+            right = '/cephfs/edward/'+x + '/real/1024_irR_real_1080_half.png '
 
             image = Image.open(data_dir + '/' +  x + '/1024_irR_real_1080.png')
             new_image = image.resize((960,540))

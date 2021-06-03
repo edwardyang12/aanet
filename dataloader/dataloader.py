@@ -60,6 +60,14 @@ class StereoDataset(Dataset):
             'val': 'filenames/custom_val_full.txt'
         }
 
+        test_sim = {
+            'train': 'filenames/custom_train_sim.txt',
+        }
+
+        test_real = {
+            'train': 'filenames/custom_train_real.txt',
+        }
+
         dataset_name_dict = {
             'SceneFlow': sceneflow_finalpass_dict,
             'KITTI2012': kitti_2012_dict,
@@ -67,6 +75,8 @@ class StereoDataset(Dataset):
             'KITTI_mix': kitti_mix_dict,
             'custom_dataset' : custom,
             'custom_dataset_full': custom_full,
+            'custom_dataset_sim': test_sim,
+            'custom_dataset_real': test_real,
         }
 
         assert dataset_name in dataset_name_dict.keys()
@@ -94,7 +104,9 @@ class StereoDataset(Dataset):
             sample['right'] = os.path.join(data_dir, right_img)
             sample['disp'] = os.path.join(data_dir, gt_disp) if gt_disp is not None else None
 
-            if(self.dataset_name == 'custom_dataset_full'):
+            if(self.dataset_name == 'custom_dataset_full' or
+                self.dataset_name == 'custom_dataset_sim' or
+                self.dataset_name == 'custom_dataset_real'):
                 meta = None if len(splits)<3 else splits[3]
                 sample['meta'] = os.path.join(data_dir, meta) # new line
 
