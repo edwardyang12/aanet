@@ -162,5 +162,84 @@ def gen_own_data_full():
             val_f.write(gt)
             val_f.write(meta)
 
+def gen_own_data_real():
+    data_dir = 'linked_real_v9'
+    train_list = 'linked_real_v9/test.txt'
+
+    train_list_f = open(train_list, 'r')
+
+    train_file = 'filenames/custom_test_real.txt'
+
+    with open(train_file, 'w') as train_f:
+        while True:
+            x = train_list_f.readline() # gets each directory
+            if not x:
+                break
+            else:
+                x = x.split()[0]
+            if x[0]!='1' and x[0]!='0':
+                continue
+            left = 'training/' +  x + '/real/1024_irL_real_1080_half.png '
+
+            image = Image.open(data_dir + '/training/' +  x + '/1024_irL_real_1080.png')
+            new_image = image.resize((960,540))
+            os.mkdir('/cephfs/edward/'+x)
+            os.mkdir('/cephfs/edward/'+x+'/real/')
+            new_image.save('/cephfs/edward/'+x +'/real/1024_irL_real_1080_half.png')
+
+            right = 'training/' +  x + '/real/1024_irR_real_1080_half.png '
+
+            image = Image.open(data_dir + '/training/' +  x + '/1024_irR_real_1080.png')
+            new_image = image.resize((960,540))
+            new_image.save('/cephfs/edward/'+x +'/real/1024_irR_real_1080_half.png')
+
+            gt = '/cephfs/edward/'+x +'/real/depth_down.png '# will need to convert into disparity
+
+            image = Image.open(data_dir + '/training/' +  x + '/depth.png')
+            new_image = image.resize((960,540))
+            new_image.save('/cephfs/edward/'+x +'/real/depth_down.png')
+
+            meta = '/workspace/aanet/linked_sim_v9/training/' +  x +'/meta.pkl \n'
+
+            train_f.write(left)
+            train_f.write(right)
+            train_f.write(gt)
+            train_f.write(meta)
+
+def gen_own_data_sim():
+    data_dir = 'linked_sim_v9'
+    train_list = 'linked_sim_v9/training_lists/all.txt'
+
+    train_list_f = open(train_list, 'r')
+
+    train_file = 'filenames/custom_test_sim.txt'
+
+    with open(train_file, 'w') as train_f:
+        while True:
+            x = train_list_f.readline() # gets each directory
+            if not x:
+                break
+            else:
+                x = x.split()[0]
+            if x[0]!='1' and x[0]!='0':
+                continue
+
+            left = 'training/' +  x + '/0128_irL_denoised_half.png '
+            right = 'training/' +  x + '/0128_irR_denoised_half.png '
+
+            image = Image.open(data_dir + '/training/' +  x + '/depth.png')
+            new_image = image.resize((960,540))
+            os.mkdir('/cephfs/edward/'+x)
+            os.mkdir('/cephfs/edward/'+x+'/sim/')
+            new_image.save('/cephfs/edward/'+x +'/sim/depth_down.png')
+
+            gt = '/cephfs/edward/'+x +'/sim/depth_down.png ' # will need to convert into disparity
+            meta = 'training/' +  x +'/meta.pkl \n'
+
+            train_f.write(left)
+            train_f.write(right)
+            train_f.write(gt)
+            train_f.write(meta)
+
 if __name__ == '__main__':
     gen_own_data()

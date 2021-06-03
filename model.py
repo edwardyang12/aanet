@@ -10,6 +10,8 @@ from metric import d1_metric, thres_metric, bad, mm_error
 from math import inf
 from warp_ops import apply_disparity_cu
 
+from PIL import Image
+
 class Model(object):
     def __init__(self, args, logger, optimizer, aanet, device, start_iter=0, start_epoch=0,
                  best_epe=None, best_epoch=None):
@@ -68,14 +70,14 @@ class Model(object):
                 gt_disp = gt_disp_1/256.
 
             if args.dataset_name=='custom_dataset_full':
-                temp = gt_disp*256.
+                temp = gt_disp
                 gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
                 gt_depth = torch.squeeze(gt_depth)
                 for x in range(left.shape[0]):
                     gt_depth[x][gt_depth[x]==inf] = 0
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
-                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x])
+                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x]*256.)
                     temp[x][temp[x]==inf] = 0
 
                 gt_disp = temp/256.
@@ -280,14 +282,14 @@ class Model(object):
                 gt_disp = gt_disp_1/256.
 
             if args.dataset_name=='custom_dataset_full':
-                temp = gt_disp*256.
+                temp = gt_disp
                 gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
                 gt_depth = torch.squeeze(gt_depth)
                 for x in range(left.shape[0]):
                     gt_depth[x][gt_depth[x]==inf] = 0
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
-                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x])
+                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x]*256.)
                     temp[x][temp[x]==inf] = 0
 
                 gt_disp = temp/256.
@@ -346,23 +348,28 @@ class Model(object):
             # val_thres3 += thres3.item()
 
             # Save 3 images for visualization
-            if not args.evaluate_only:
-                if i in [num_samples // 4, num_samples // 2, num_samples // 4 * 3]:
-                    img_summary = dict()
-                    img_summary['disp_error'] = disp_error_img(pred_disp, gt_disp)
-                    img_summary['depth_error'] = depth_error_img(pred_depth, gt_depth)
-                    img_summary['left'] = left
-                    img_summary['right'] = right
-                    img_summary['gt_depth'] = gt_depth
-                    img_summary['gt_disp'] = gt_disp
-                    img_summary['pred_disp'] = pred_disp
-                    img_summary['pred_depth'] = pred_depth
+
+            if i in [num_samples // 4, num_samples // 2, num_samples // 4 * 3]:
+                if args.evaluate_only:
+                    im = Image.fromarray(pred_depth)
+                    os.mkdir('/cephfs/edward/depths')
+                    im.save('/cephfs/edward/depths/'+i+".png")
+
+                img_summary = dict()
+                img_summary['disp_error'] = disp_error_img(pred_disp, gt_disp)
+                img_summary['depth_error'] = depth_error_img(pred_depth, gt_depth)
+                img_summary['left'] = left
+                img_summary['right'] = right
+                img_summary['gt_depth'] = gt_depth
+                img_summary['gt_disp'] = gt_disp
+                img_summary['pred_disp'] = pred_disp
+                img_summary['pred_depth'] = pred_depth
 
 
-                    # img_summary['gt_disp'] = gt_disp
-                    # img_summary['pred_disp'] = pred_disp
-                    save_images(self.train_writer, 'val' + str(val_count), img_summary, self.epoch)
-                    val_count += 1
+                # img_summary['gt_disp'] = gt_disp
+                # img_summary['pred_disp'] = pred_disp
+                save_images(self.train_writer, 'val' + str(val_count), img_summary, self.epoch)
+                val_count += 1
 
         logger.info('=> Validation done!')
 
@@ -395,18 +402,17 @@ class Model(object):
 
         logger.info('=> Mean validation epe of epoch %d: %.3f' % (self.epoch, mean_epe))
 
-        if not args.evaluate_only:
-            self.train_writer.add_scalar('val/epe', mean_epe, self.epoch)
-            self.train_writer.add_scalar('val/d1', mean_d1, self.epoch)
-            self.train_writer.add_scalar('val/bad1', mean_bad1, self.epoch)
-            self.train_writer.add_scalar('val/bad2', mean_bad2, self.epoch)
-            self.train_writer.add_scalar('val/abs', mean_abs, self.epoch)
-            self.train_writer.add_scalar('val/mm2', mean_mm2, self.epoch)
-            self.train_writer.add_scalar('val/mm4', mean_mm4, self.epoch)
-            self.train_writer.add_scalar('val/mm8', mean_mm8, self.epoch)
-            # self.train_writer.add_scalar('val/thres1', mean_thres1, self.epoch)
-            # self.train_writer.add_scalar('val/thres2', mean_thres2, self.epoch)
-            # self.train_writer.add_scalar('val/thres3', mean_thres3, self.epoch)
+        self.train_writer.add_scalar('val/epe', mean_epe, self.epoch)
+        self.train_writer.add_scalar('val/d1', mean_d1, self.epoch)
+        self.train_writer.add_scalar('val/bad1', mean_bad1, self.epoch)
+        self.train_writer.add_scalar('val/bad2', mean_bad2, self.epoch)
+        self.train_writer.add_scalar('val/abs', mean_abs, self.epoch)
+        self.train_writer.add_scalar('val/mm2', mean_mm2, self.epoch)
+        self.train_writer.add_scalar('val/mm4', mean_mm4, self.epoch)
+        self.train_writer.add_scalar('val/mm8', mean_mm8, self.epoch)
+        # self.train_writer.add_scalar('val/thres1', mean_thres1, self.epoch)
+        # self.train_writer.add_scalar('val/thres2', mean_thres2, self.epoch)
+        # self.train_writer.add_scalar('val/thres3', mean_thres3, self.epoch)
 
         if not args.evaluate_only:
             if args.val_metric == 'd1':
