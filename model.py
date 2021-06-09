@@ -160,6 +160,7 @@ class Model(object):
                 img_summary['left'] = left
                 img_summary['right'] = right
                 img_summary['gt_disp'] = gt_disp
+                img_summary['gt_depth'] = gt_depth
 
                 if args.load_pseudo_gt:
                     img_summary['pseudo_gt_disp'] = pseudo_gt_disp
@@ -294,6 +295,7 @@ class Model(object):
                     temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x])
                     temp[x][temp[x]==inf] = 0
                 gt_disp = temp
+                print(torch.unique(gt_depth), torch.unique(gt_disp))
 
             if(args.dataset_name == 'custom_dataset_sim' or
                 args.dataset_name == 'custom_dataset_real'):
@@ -334,7 +336,9 @@ class Model(object):
             bad2 = bad(pred_disp, gt_disp, mask_disp, threshold=2)
 
             pred_depth = []
-            if(args.dataset_name == 'custom_dataset_full'):
+            if(self.dataset_name == 'custom_dataset_full' or
+                self.dataset_name == 'custom_dataset_sim' or
+                self.dataset_name == 'custom_dataset_real'):
                 temp = gt_disp
                 for x in range(left.shape[0]):
                     baseline = sample['baseline'][x].to(self.device)
