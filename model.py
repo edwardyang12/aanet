@@ -240,7 +240,7 @@ class Model(object):
             logger.info('=> loading pretrained aanet: %s' % pretrained_aanet)
             utils.load_pretrained_net(self.aanet, pretrained_aanet, no_strict=True)
 
-        self.aanet.eval()
+        self.aanet.train()
 
         num_samples = len(val_loader)
         logger.info('=> %d samples found in the validation set' % num_samples)
