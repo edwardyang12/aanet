@@ -11,7 +11,7 @@ import sys
 
 def read_img(filename):
     # Convert to RGB for scene flow finalpass data
-    img = np.array(transforms.functional.adjust_gamma(Image.open(filename).convert('RGB'),gamma=.5)).astype(np.float32)
+    img = np.array(transforms.functional.adjust_gamma(Image.open(filename).convert('RGB'),gamma=.1)).astype(np.float32)
     return img
 
 
