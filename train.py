@@ -107,8 +107,10 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Train loader
-    train_transform_list = [transforms.RandomContrast(),
+    train_transform_list = [transforms.ToPILImage(),
+                            transforms.RandomContrast(),
                             transforms.RandomBrightness(),
+                            transforms.ToNumpyArray(),
                             transforms.RandomCrop(args.img_height, args.img_width),
                             # transforms.RandomColor(),
                             transforms.RandomVerticalFlip(),
