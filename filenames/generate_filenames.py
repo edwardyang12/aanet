@@ -196,7 +196,7 @@ def gen_own_data_real():
 
             gt = '/cephfs/edward/'+x +'/sim/depthR_down.png ' # using sim as GT also
 
-            meta = '/workspace/aanet/linked_sim_v9/training/' +  x +'/meta.pkl'
+            meta = '/workspace/aanet/linked_sim_v9/training/' +  x +'/meta.pkl '
 
             label = '/workspace/aanet/linked_sim_v9/training/' +  x +'/label.png \n'
 
@@ -235,7 +235,7 @@ def gen_own_data_sim():
 
             gt = '/cephfs/edward/'+x +'/sim/depthR_down.png ' # will need to convert into disparity
 
-            meta = '/workspace/aanet/linked_sim_v9/training/' +  x +'/meta.pkl'
+            meta = '/workspace/aanet/linked_sim_v9/training/' +  x +'/meta.pkl '
 
             label = '/workspace/aanet/linked_sim_v9/training/' +  x +'/label.png \n'
 
