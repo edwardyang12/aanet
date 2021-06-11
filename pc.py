@@ -27,12 +27,12 @@ points_viewer = points_viewer[mask_depth]
 print(np.unique(points_viewer))
 print(points_viewer.shape)
 
-points = open3d.utility.Vector3dVector(points_viewer.reshape([-1, 3]))
+# points = open3d.utility.Vector3dVector(points_viewer.reshape([-1, 3]))
+#
+# pcd = open3d.geometry.PointCloud()
+# pcd.points = points
+#
+# open3d.visualization.draw_geometries([pcd])
 
-pcd = open3d.geometry.PointCloud()
-pcd.points = points
-
-open3d.visualization.draw_geometries([pcd])
-
-# plt.imshow(depth)
-# plt.show()
+plt.imshow(depth)
+plt.show()

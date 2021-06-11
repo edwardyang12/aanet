@@ -196,12 +196,15 @@ def gen_own_data_real():
 
             gt = '/cephfs/edward/'+x +'/sim/depthR_down.png ' # using sim as GT also
 
-            meta = '/workspace/aanet/linked_sim_v9/training/' +  x +'/meta.pkl \n'
+            meta = '/workspace/aanet/linked_sim_v9/training/' +  x +'/meta.pkl'
+
+            label = '/workspace/aanet/linked_sim_v9/training/' +  x +'/label.png \n'
 
             train_f.write(left)
             train_f.write(right)
             train_f.write(gt)
             train_f.write(meta)
+            train_f.write(label)
 
 def gen_own_data_sim():
     data_dir = 'linked_sim_v9'
@@ -231,12 +234,16 @@ def gen_own_data_sim():
             new_image.save('/cephfs/edward/'+x +'/sim/depthR_down.png')
 
             gt = '/cephfs/edward/'+x +'/sim/depthR_down.png ' # will need to convert into disparity
-            meta = 'training/' +  x +'/meta.pkl \n'
+
+            meta = '/workspace/aanet/linked_sim_v9/training/' +  x +'/meta.pkl'
+
+            label = '/workspace/aanet/linked_sim_v9/training/' +  x +'/label.png \n'
 
             train_f.write(left)
             train_f.write(right)
             train_f.write(gt)
             train_f.write(meta)
+            train_f.write(label)
 
 if __name__ == '__main__':
     gen_own_data()

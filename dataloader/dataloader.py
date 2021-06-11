@@ -110,7 +110,11 @@ class StereoDataset(Dataset):
                 self.dataset_name == 'custom_dataset_sim' or
                 self.dataset_name == 'custom_dataset_real'):
                 meta = None if len(splits)<3 else splits[3]
-                sample['meta'] = os.path.join(data_dir, meta) # new line
+                sample['meta'] = os.path.join(data_dir, meta) # new
+
+                if (self.dataset_name == 'custom_dataset_sim' or
+                self.dataset_name == 'custom_dataset_real'):
+                    sample['label'] = os.path.join(data_dir, label) # label image
 
             if load_pseudo_gt and sample['disp'] is not None:
                 # KITTI 2015
@@ -153,7 +157,11 @@ class StereoDataset(Dataset):
             self.dataset_name == 'custom_dataset_real'):
             temp = pd.read_pickle(sample_path['meta'])
             sample['intrinsic'] = temp['intrinsic']
-            sample['baseline'] = abs((temp['extrinsic_l']-temp['extrinsic_r'])[0][3])
+            sample['baseline'] = abs((temp['extrinsic_l']-temp['extrinsic_r'])[0][3
+
+            if (self.dataset_name == 'custom_dataset_sim' or
+            self.dataset_name == 'custom_dataset_real'):
+                sample['label'] = read_img(sample_path['label']) # label image
 
         return sample
 

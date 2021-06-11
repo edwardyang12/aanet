@@ -387,7 +387,8 @@ class Model(object):
                     im = (gt_depth[0]).detach().cpu().numpy().astype(np.uint16)
                     imageio.imwrite('/cephfs/edward/depths/'+str(i)+"gt.png",im)
 
-                    info = {'baseline': sample['baseline'][x],'intrinsic' :sample['intrinsic'][x]}
+                    info = {'baseline': sample['baseline'][x],'intrinsic' :sample['intrinsic'][x],
+                        'object_ids': sample['object_ids'][x], 'extrinsic': sample['extrinsic'][x]}
                     filename = '/cephfs/edward/depths/meta' + str(i) + '.pkl'
                     with open(filename, 'wb') as f:
                         pickle.dump(info, f)
