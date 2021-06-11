@@ -387,6 +387,8 @@ class Model(object):
                     im = (gt_depth[0]).detach().cpu().numpy().astype(np.uint16)
                     imageio.imwrite('/cephfs/edward/depths/'+str(i)+"gt.png",im)
 
+                    imageio.imwrite('/cephs/edward/depths/' + str(i) + "label.png", sample['label'][x].detach().numpy().astype(np.uint16))
+
                     info = {'baseline': sample['baseline'][x],'intrinsic' :sample['intrinsic'][x],
                         'object_ids': sample['object_ids'][x], 'extrinsic': sample['extrinsic'][x]}
                     filename = '/cephfs/edward/depths/meta' + str(i) + '.pkl'
