@@ -82,6 +82,7 @@ class Model(object):
                     temp[x][temp[x]==inf] = 0
 
                 gt_disp = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
+                gt_disp = torch.squeeze(gt_disp)
 
                 gt_depth = temp
                 # convert to gt_depth
@@ -134,7 +135,6 @@ class Model(object):
                                               mode='bilinear', align_corners=False) * (gt_disp.size(-1) / pred_disp.size(-1))
                     pred_disp = pred_disp.squeeze(1)  # [B, H, W]
 
-                print(pred_disp.shape, gt_disp.shape)
                 curr_loss = F.smooth_l1_loss(pred_disp[mask], gt_disp[mask],
                                              reduction='mean')
                 disp_loss += weight * curr_loss
