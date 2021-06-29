@@ -134,6 +134,7 @@ class Model(object):
                                               mode='bilinear', align_corners=False) * (gt_disp.size(-1) / pred_disp.size(-1))
                     pred_disp = pred_disp.squeeze(1)  # [B, H, W]
 
+                print(pred_disp.shape, gt_disp.shape)
                 curr_loss = F.smooth_l1_loss(pred_disp[mask], gt_disp[mask],
                                              reduction='mean')
                 disp_loss += weight * curr_loss
