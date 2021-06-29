@@ -10,7 +10,7 @@ def load_pickle(filename):
     with open(filename, 'rb') as f:
         return pickle.load(f)
 
-depth = np.array(Image.open('126.png')) / 1000
+depth = np.array(Image.open('126gt_new.png'))/ 1000
 
 meta = load_pickle('meta126.pkl')
 

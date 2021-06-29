@@ -8,7 +8,8 @@ import pandas as pd
 
 from utils import utils
 from utils.file_io import read_img, read_disp
-
+from PIL import Image
+import numpy as np
 
 class StereoDataset(Dataset):
     def __init__(self, data_dir,
@@ -161,7 +162,7 @@ class StereoDataset(Dataset):
 
             if (self.dataset_name == 'custom_dataset_sim' or
             self.dataset_name == 'custom_dataset_real'):
-                sample['label'] = read_img(sample_path['label']) # label image
+                sample['label'] = np.array(Image.open(sample_path['label']))
                 sample['object_ids']=temp['object_ids']
                 sample['extrinsic'] = temp['extrinsic']
 

@@ -111,7 +111,7 @@ def main():
                             transforms.RandomContrast(),
                             transforms.RandomBrightness(),
                             transforms.ToNumpyArray(),
-                            transforms.RandomCrop(args.img_height, args.img_width),
+
                             # transforms.RandomColor(),
                             transforms.RandomVerticalFlip(),
                             transforms.ToTensor(),

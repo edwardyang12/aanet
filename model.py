@@ -72,17 +72,25 @@ class Model(object):
                 gt_disp = gt_disp_1
 
             if(args.dataset_name == 'custom_dataset_full'):
-                temp = gt_disp
-                gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
-                gt_depth = torch.squeeze(gt_depth)*256.
+
+                # convert to disparity then apply warp ops
+                temp = gt_disp*256.
                 for x in range(left.shape[0]):
-                    gt_depth[x][gt_depth[x]==inf] = 0
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
-                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x])
+                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(temp[x])
                     temp[x][temp[x]==inf] = 0
 
-                gt_disp = temp
+                gt_disp = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
+
+                gt_depth = temp
+                # convert to gt_depth
+                for x in range(left.shape[0]):
+                    baseline = sample['baseline'][x].to(self.device)
+                    intrinsic = sample['intrinsic'][x].to(self.device)
+                    gt_depth[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_disp[x])
+                    gt_depth[x][gt_depth[x]==inf] = 0
+                gt_depth = gt_depth.to(self.device)
 
             mask = (gt_disp > 0.) & (gt_disp < args.max_disp)
 
@@ -284,30 +292,49 @@ class Model(object):
                 gt_disp = gt_disp_1
 
             if(args.dataset_name == 'custom_dataset_full'):
-                temp = gt_disp
-                gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
-                gt_depth = torch.squeeze(gt_depth)*256.
+
+                # convert to disparity then apply warp ops
+                temp = gt_disp*256.
                 for x in range(left.shape[0]):
-                    gt_depth[x][gt_depth[x]==inf] = 0
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
-                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x])
+                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(temp[x])
                     temp[x][temp[x]==inf] = 0
-                gt_disp = temp
+
+                gt_disp = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
+                gt_disp = torch.squeeze(gt_disp)
+
+                gt_depth = temp
+                # convert to gt_depth
+                for x in range(left.shape[0]):
+                    baseline = sample['baseline'][x].to(self.device)
+                    intrinsic = sample['intrinsic'][x].to(self.device)
+                    gt_depth[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_disp[x])
+                    gt_depth[x][gt_depth[x]==inf] = 0
+                gt_depth = gt_depth.to(self.device)
 
             if(args.dataset_name == 'custom_dataset_sim' or
                 args.dataset_name == 'custom_dataset_real'):
-                temp = gt_disp
-                gt_depth = apply_disparity_cu(temp.unsqueeze(1),-temp.type(torch.int))
-                gt_depth = torch.squeeze(gt_depth)*256.
-                gt_depth = torch.unsqueeze(gt_depth,0)
+                temp = gt_disp*256.
                 for x in range(left.shape[0]):
-                    gt_depth[x][gt_depth[x]==inf] = 0
                     baseline = sample['baseline'][x].to(self.device)
                     intrinsic = sample['intrinsic'][x].to(self.device)
-                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_depth[x])
+                    temp[x] = (baseline*1000*intrinsic[0][0]/2)/(temp[x])
                     temp[x][temp[x]==inf] = 0
-                gt_disp = temp
+
+                gt_disp = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
+                gt_disp = torch.squeeze(gt_disp)
+
+                gt_disp = torch.unsqueeze(gt_disp,0)
+
+                gt_depth = temp
+                # convert to gt_depth
+                for x in range(left.shape[0]):
+                    baseline = sample['baseline'][x].to(self.device)
+                    intrinsic = sample['intrinsic'][x].to(self.device)
+                    gt_depth[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_disp[x])
+                    gt_depth[x][gt_depth[x]==inf] = 0
+                gt_depth = gt_depth.to(self.device)
 
             mask_disp = (gt_disp > 0.) & (gt_disp < args.max_disp)
 
