@@ -15,7 +15,8 @@ def read_img(filename):
     # img = np.array(transforms.functional.adjust_gamma(Image.open(filename).convert('RGB'),gamma=rand)).astype(np.float32)
     img = np.array(Image.open(filename).convert('RGB')).astype(np.float32)
     if np.random.random() < 0.5:
-        img = cv2.GaussianBlur(img,(7,7),0)
+        kernel = np.random.choice([3,5,7,9])
+        img = cv2.GaussianBlur(img,(kernel, kernel),0)
     return img
 
 
