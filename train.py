@@ -1,7 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
 
-import torchvision
 import argparse
 import numpy as np
 import os
@@ -11,6 +10,7 @@ import dataloader
 from dataloader import transforms
 from utils import utils
 import model
+
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
@@ -116,7 +116,7 @@ def main():
                             # transforms.RandomColor(),
                             transforms.RandomVerticalFlip(),
                             transforms.ToTensor(),
-                            transforms.RandomGaussian(),
+                            # transforms.RandomGaussian(),
                             transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
                             ]
     train_transform = transforms.Compose(train_transform_list)
@@ -133,7 +133,7 @@ def main():
                               num_workers=args.num_workers, pin_memory=True, drop_last=True)
 
     # Validation loader
-    val_transform_list = [transforms.RandomCrop(args.val_img_height, args.val_img_width, validate=True),
+    val_transform_list = [
                           transforms.ToTensor(),
                           transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
                          ]

@@ -7,13 +7,15 @@ import numpy as np
 import re
 from PIL import Image
 import sys
-
+import cv2
 
 def read_img(filename):
     # Convert to RGB for scene flow finalpass data
     # rand = np.random.uniform()
     # img = np.array(transforms.functional.adjust_gamma(Image.open(filename).convert('RGB'),gamma=rand)).astype(np.float32)
     img = np.array(Image.open(filename).convert('RGB')).astype(np.float32)
+    if np.random.random() < 0.5:
+        img = cv2.GaussianBlur(img,(7,7),0)
     return img
 
 
