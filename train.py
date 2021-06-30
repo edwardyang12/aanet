@@ -116,6 +116,7 @@ def main():
                             # transforms.RandomColor(),
                             transforms.RandomVerticalFlip(),
                             transforms.ToTensor(),
+                            transforms.RandomGaussian(),
                             transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
                             ]
     train_transform = transforms.Compose(train_transform_list)

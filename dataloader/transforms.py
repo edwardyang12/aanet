@@ -193,6 +193,16 @@ class RandomBrightness(object):
 
         return sample
 
+class RandomGaussian(object):
+
+    def __call__(self, sample):
+        if np.random.random() < 0.5:
+            
+            sample['left'] = F.gaussian_blur(sample['left'], 7)
+            sample['right'] = F.gaussian_blur(sample['right'], 7)
+
+        return sample
+
 
 class RandomHue(object):
 
