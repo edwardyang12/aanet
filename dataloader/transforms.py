@@ -193,11 +193,12 @@ class RandomBrightness(object):
 
         return sample
 
+# doeesn't work because outdated pytorch version
 class RandomGaussian(object):
 
     def __call__(self, sample):
         if np.random.random() < 0.5:
-            
+
             sample['left'] = F.gaussian_blur(sample['left'], 7)
             sample['right'] = F.gaussian_blur(sample['right'], 7)
 

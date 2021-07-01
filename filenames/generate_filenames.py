@@ -181,24 +181,24 @@ def gen_own_data_real():
                 continue
             left = '/cephfs/edward/'+x + '/real/1024_irL_real_1080_half.png '
 
-            image = Image.open(data_dir + '/' + x + '/1024_irL_real_1080.png')
-            new_image = image.resize((960,540))
-            if not os.path.isdir('/cephfs/edward/'+x):
-                os.mkdir('/cephfs/edward/'+x)
-            os.mkdir('/cephfs/edward/'+x+'/real/')
-            new_image.save('/cephfs/edward/'+x +'/real/1024_irL_real_1080_half.png')
+            # image = Image.open(data_dir + '/' + x + '/1024_irL_real_1080.png')
+            # new_image = image.resize((960,540))
+            # if not os.path.isdir('/cephfs/edward/'+x):
+            #    os.mkdir('/cephfs/edward/'+x)
+            #os.mkdir('/cephfs/edward/'+x+'/real/')
+            # new_image.save('/cephfs/edward/'+x +'/real/1024_irL_real_1080_half.png')
 
             right = '/cephfs/edward/'+x + '/real/1024_irR_real_1080_half.png '
 
-            image = Image.open(data_dir + '/' +  x + '/1024_irR_real_1080.png')
-            new_image = image.resize((960,540))
-            new_image.save('/cephfs/edward/'+x +'/real/1024_irR_real_1080_half.png')
+            # image = Image.open(data_dir + '/' +  x + '/1024_irR_real_1080.png')
+            # new_image = image.resize((960,540))
+            # new_image.save('/cephfs/edward/'+x +'/real/1024_irR_real_1080_half.png')
 
             gt = '/cephfs/edward/'+x +'/sim/depthR_down.png ' # using sim as GT also
 
             meta = '/workspace/aanet/linked_sim_v9/training/' +  x +'/meta.pkl '
 
-            label = '/workspace/aanet/linked_sim_v9/training/' +  x +'/label.png \n'
+            label = '/workspace/aanet/linked_real_v9/' +  x +'/irL_label_image.png \n'
 
             train_f.write(left)
             train_f.write(right)
@@ -227,17 +227,17 @@ def gen_own_data_sim():
             left = 'training/' +  x + '/0128_irL_denoised_half.png '
             right = 'training/' +  x + '/0128_irR_denoised_half.png '
 
-            image = Image.open(data_dir + '/training/' +  x + '/depthR.png')
-            new_image = image.resize((960,540))
-            os.mkdir('/cephfs/edward/'+x)
-            os.mkdir('/cephfs/edward/'+x+'/sim/')
-            new_image.save('/cephfs/edward/'+x +'/sim/depthR_down.png')
+            #image = Image.open(data_dir + '/training/' +  x + '/depthR.png')
+            #new_image = image.resize((960,540))
+            #os.mkdir('/cephfs/edward/'+x)
+            #os.mkdir('/cephfs/edward/'+x+'/sim/')
+            #new_image.save('/cephfs/edward/'+x +'/sim/depthR_down.png')
 
             gt = '/cephfs/edward/'+x +'/sim/depthR_down.png ' # will need to convert into disparity
 
             meta = '/workspace/aanet/linked_sim_v9/training/' +  x +'/meta.pkl '
 
-            label = '/workspace/aanet/linked_sim_v9/training/' +  x +'/label.png \n'
+            label = '/workspace/aanet/linked_real_v9/' +  x +'/irL_label_image.png \n'
 
             train_f.write(left)
             train_f.write(right)
@@ -246,4 +246,4 @@ def gen_own_data_sim():
             train_f.write(label)
 
 if __name__ == '__main__':
-    gen_own_data()
+    gen_own_data_sim()
