@@ -14,7 +14,7 @@ import imageio
 import pickle
 import numpy as np
 
-object = True
+onlyObj = True
 class Model(object):
     def __init__(self, args, logger, optimizer, aanet, device, start_iter=0, start_epoch=0,
                  best_epe=None, best_epoch=None):
@@ -357,8 +357,8 @@ class Model(object):
                 pred_disp = pred_disp.squeeze(1)  # [B, H, W]
 
             if((args.dataset_name == 'custom_dataset_sim' or
-                args.dataset_name == 'custom_dataset_real') and object):
-                gt_disp[label>=17] = 0
+                args.dataset_name == 'custom_dataset_real') and onlyObj):
+                gt_disp[sample['label']>=17] = 0
                 mask_disp = (gt_disp > 0.) & (gt_disp < args.max_disp)
 
             epe = F.l1_loss(gt_disp[mask_disp], pred_disp[mask_disp], reduction='mean')
@@ -385,8 +385,8 @@ class Model(object):
             mask_depth = (gt_depth > 0.) & (gt_depth < 2000)
 
             if((args.dataset_name == 'custom_dataset_sim' or
-                args.dataset_name == 'custom_dataset_real') and object):
-                gt_depth[label>=17] = 0
+                args.dataset_name == 'custom_dataset_real') and onlyObj):
+                gt_depth[sample['label']>=17] = 0
                 mask_depth = (gt_depth > 0.) & (gt_disp < args.max_disp)
 
             abs = F.l1_loss(gt_depth[mask_depth], pred_depth[mask_depth], reduction='mean')
@@ -426,10 +426,10 @@ class Model(object):
                     im = (gt_depth[0]).detach().cpu().numpy().astype(np.uint16)
                     imageio.imwrite('/cephfs/edward/depths/'+str(i)+"gt.png",im)
 
-                    imageio.imwrite('/cephfs/edward/depths/' + str(i) + "label.png", sample['label'][i].detach().numpy().astype(np.uint8))
+                    imageio.imwrite('/cephfs/edward/depths/' + str(i) + "label.png", sample['label'][x].detach().numpy().astype(np.uint8))
 
-                    info = {'baseline': sample['baseline'][i],'intrinsic' :sample['intrinsic'][i],
-                        'object_ids': sample['object_ids'][i], 'extrinsic': sample['extrinsic'][i]}
+                    info = {'baseline': sample['baseline'][x],'intrinsic' :sample['intrinsic'][x],
+                        'object_ids': sample['object_ids'][x], 'extrinsic': sample['extrinsic'][x]}
                     filename = '/cephfs/edward/depths/meta' + str(i) + '.pkl'
                     with open(filename, 'wb') as f:
                         pickle.dump(info, f)
@@ -441,9 +441,9 @@ class Model(object):
                 img_summary['gt_disp'] = gt_disp
 
                 if((args.dataset_name == 'custom_dataset_sim' or
-                    args.dataset_name == 'custom_dataset_real') and object):
-                    pred_disp[label>=17] = 0
-                    pred_depth[label>=17] = 0
+                    args.dataset_name == 'custom_dataset_real') and onlyObj):
+                    pred_disp[sample['label']>=17] = 0
+                    pred_depth[sample['label']>=17] = 0
 
                 img_summary['disp_error'] = disp_error_img(pred_disp, gt_disp)
                 img_summary['depth_error'] = depth_error_img(pred_depth, gt_depth)
