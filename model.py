@@ -15,6 +15,15 @@ import pickle
 import numpy as np
 
 onlyObj = False
+perObject = True
+perObjectDepth = dict()
+perObjectDisp = dict()
+objectCount = dict()
+for i in range(18):
+    perObjectDepth[i] = 0
+    perObjectDisp[i] = 0
+    objectCount[i] = 0
+
 class Model(object):
     def __init__(self, args, logger, optimizer, aanet, device, start_iter=0, start_epoch=0,
                  best_epe=None, best_epoch=None):
@@ -397,6 +406,25 @@ class Model(object):
 
             pred_depth[pred_depth>2000]=0
 
+            if(perObject):
+                for x in range(left.shape[0]):
+                    labels = sample['label'][x].detach().numpy().astype(np.uint8)
+                    for obj in np.unique(labels):
+                        gtObjectDepth = gt_depth[x].detach().clone()
+                        gtObjectDepth[labels!=obj] = 0
+                        predObjectDepth = pred_depth[x].detach().clone()
+                        predObjectDepth[labels!=obj] = 0
+
+                        gtObjectDisp = gt_disp[x].detach().clone()
+                        gtObjectDisp[labels!=obj] = 0
+                        predObjectDisp = pred_disp[x].detach().clone()
+                        predObjectDisp[labels!=obj] = 0
+
+                        objectCount[obj]+=1
+
+                        perObjectDisp[obj] += F.l1_loss(gtObjectDisp[mask_disp], predObjectDisp[mask_disp], reduction='mean')
+                        perObjectDepth[obj] += F.l1_loss(gtObjectDepth[mask_disp], predObjectDepth[mask_disp], reduction='mean')
+
             # thres1 = thres_metric(pred_disp, gt_disp, mask, 1.0)
             # thres2 = thres_metric(pred_disp, gt_disp, mask, 2.0)
             # thres3 = thres_metric(pred_disp, gt_disp, mask, 3.0)
@@ -454,6 +482,12 @@ class Model(object):
                 val_count += 1
 
         logger.info('=> Validation done!')
+        if(perObject):
+            for key, value in objectCount.items():
+
+                perObjectDisp[key] = float(perObjectDisp[key])/value
+                perObjectDepth[key] = float(perObjectDepth[key])/value
+            print(perObjectDisp, perObjectDepth)
 
         mean_epe = val_epe / valid_samples
         mean_d1 = val_d1 / valid_samples

@@ -162,7 +162,7 @@ class StereoDataset(Dataset):
 
             if (self.dataset_name == 'custom_dataset_sim' or
             self.dataset_name == 'custom_dataset_real'):
-                sample['label'] = np.array(Image.open(sample_path['label']).resize((960,540)))
+                sample['label'] = np.array(Image.open(sample_path['label']).resize((960,540), resample=Image.NEAREST))
                 sample['object_ids']=temp['object_ids']
                 sample['extrinsic'] = temp['extrinsic']
 

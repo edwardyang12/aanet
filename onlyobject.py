@@ -7,12 +7,13 @@ if __name__ == "__main__":
     depth = np.array(Image.open('126gt.png'))/ 1000
     pred = np.array(Image.open('126.png'))/1000
 
-    label = Image.open('126label.png').resize((960,540))
+    print(np.unique(np.array(Image.open('126label.png'))))
+    label = Image.open('126label.png').resize((960,540), resample=Image.NEAREST)
     label = np.array(label)
+    for x in np.unique(label):
+        print(x)
+        temp = pred.copy()
+        temp[label!=x] = 0
 
-    depth[label>=17] = 0
-    pred[label>=17] = 0
-
-    plt.imshow(depth)
-    plt.imshow(pred)
-    plt.show()
+        plt.imshow(temp)
+        plt.show()
