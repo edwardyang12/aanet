@@ -14,7 +14,7 @@ import imageio
 import pickle
 import numpy as np
 
-onlyObj = True
+onlyObj = False
 class Model(object):
     def __init__(self, args, logger, optimizer, aanet, device, start_iter=0, start_epoch=0,
                  best_epe=None, best_epoch=None):
