@@ -272,7 +272,7 @@ def gen_own_data_obj():
             gt = '/cephfs/edward/'+x +'/depthR_down.png ' # will need to convert into disparity
             meta = 'training/' +  x +'/meta.pkl '
 
-            label = '/workspace/aanet/linked_real_v9/' +  x +'/irL_label_image.png \n'
+            label = 'training/' +  x +'/irL_label_image.png \n'
 
             train_f.write(left)
             train_f.write(right)
@@ -295,7 +295,7 @@ def gen_own_data_obj():
             gt = '/cephfs/edward/'+x +'/depthR_down.png '# will need to convert into disparity
             meta = 'training/' +  x +'/meta.pkl '
 
-            label = '/workspace/aanet/linked_real_v9/' +  x +'/irL_label_image.png \n'
+            label = 'training/' +  x +'/irL_label_image.png \n'
 
             val_f.write(left)
             val_f.write(right)

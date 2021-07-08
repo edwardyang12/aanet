@@ -72,8 +72,8 @@ class StereoDataset(Dataset):
         }
 
         custom_obj = {
-            'train': 'filenames/custom_train_full.txt',
-            'val': 'filenames/custom_val_full.txt'
+            'train': 'filenames/custom_train_obj.txt',
+            'val': 'filenames/custom_val_obj.txt'
         }
 
         dataset_name_dict = {
@@ -122,7 +122,7 @@ class StereoDataset(Dataset):
 
                 if (self.dataset_name == 'custom_dataset_sim' or
                 self.dataset_name == 'custom_dataset_real' or
-                self.args.dataset_name == 'custom_dataset_obj'):
+                self.dataset_name == 'custom_dataset_obj'):
                     sample['label'] = os.path.join(data_dir, splits[4]) # label image
 
             if load_pseudo_gt and sample['disp'] is not None:
