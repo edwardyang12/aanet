@@ -71,6 +71,11 @@ class StereoDataset(Dataset):
             'test': 'filenames/custom_test_real.txt',
         }
 
+        custom_obj = {
+            'train': 'filenames/custom_train_full.txt',
+            'val': 'filenames/custom_val_full.txt'
+        }
+
         dataset_name_dict = {
             'SceneFlow': sceneflow_finalpass_dict,
             'KITTI2012': kitti_2012_dict,
@@ -80,6 +85,7 @@ class StereoDataset(Dataset):
             'custom_dataset_full': custom_full,
             'custom_dataset_sim': test_sim,
             'custom_dataset_real': test_real,
+            'custom_dataset_obj': custom_obj,
         }
 
         assert dataset_name in dataset_name_dict.keys()
@@ -109,12 +115,14 @@ class StereoDataset(Dataset):
 
             if(self.dataset_name == 'custom_dataset_full' or
                 self.dataset_name == 'custom_dataset_sim' or
-                self.dataset_name == 'custom_dataset_real'):
+                self.dataset_name == 'custom_dataset_real'or
+                self.dataset_name == 'custom_dataset_obj'):
                 meta = None if len(splits)<3 else splits[3]
                 sample['meta'] = os.path.join(data_dir, meta) # new
 
                 if (self.dataset_name == 'custom_dataset_sim' or
-                self.dataset_name == 'custom_dataset_real'):
+                self.dataset_name == 'custom_dataset_real' or
+                self.args.dataset_name == 'custom_dataset_obj'):
                     sample['label'] = os.path.join(data_dir, splits[4]) # label image
 
             if load_pseudo_gt and sample['disp'] is not None:
@@ -155,16 +163,18 @@ class StereoDataset(Dataset):
 
         if(self.dataset_name == 'custom_dataset_full' or
             self.dataset_name == 'custom_dataset_sim' or
-            self.dataset_name == 'custom_dataset_real'):
+            self.dataset_name == 'custom_dataset_real'or
+            self.dataset_name == 'custom_dataset_obj'):
             temp = pd.read_pickle(sample_path['meta'])
             sample['intrinsic'] = temp['intrinsic']
             sample['baseline'] = abs((temp['extrinsic_l']-temp['extrinsic_r'])[0][3])
 
-            if (self.dataset_name == 'custom_dataset_sim' or
-            self.dataset_name == 'custom_dataset_real'):
+            if (self.dataset_name != 'custom_dataset_full'):
                 sample['label'] = np.array(Image.open(sample_path['label']).resize((960,540), resample=Image.NEAREST))
                 sample['object_ids']=temp['object_ids']
-                sample['extrinsic'] = temp['extrinsic']
+                if (self.dataset_name !='custom_dataset_obj'):
+                    sample['extrinsic'] = temp['extrinsic']
+
 
 
         return sample

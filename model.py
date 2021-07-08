@@ -14,8 +14,8 @@ import imageio
 import pickle
 import numpy as np
 
-onlyObj = False
-perObject = True
+onlyObj = True
+perObject = False
 perObjectDepth = dict()
 perObjectDisp = dict()
 objectCount = dict()
@@ -81,7 +81,8 @@ class Model(object):
                 gt_depth = gt_disp*256.
                 gt_disp = gt_disp_1
 
-            if(args.dataset_name == 'custom_dataset_full'):
+            if(args.dataset_name == 'custom_dataset_full' or
+                args.dataset_name == 'custom_dataset_obj'):
 
                 # convert to disparity then apply warp ops
                 temp = gt_disp*256.
@@ -94,16 +95,18 @@ class Model(object):
                 gt_disp = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
                 gt_disp = torch.squeeze(gt_disp)
 
-                gt_depth = temp
-                # convert to gt_depth
-                for x in range(left.shape[0]):
-                    baseline = sample['baseline'][x].to(self.device)
-                    intrinsic = sample['intrinsic'][x].to(self.device)
-                    gt_depth[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_disp[x])
-                    gt_depth[x][gt_depth[x]==inf] = 0
-                gt_depth = gt_depth.to(self.device)
+                # gt_depth = temp
+                # for x in range(left.shape[0]):
+                #     baseline = sample['baseline'][x].to(self.device)
+                #     intrinsic = sample['intrinsic'][x].to(self.device)
+                #     gt_depth[x] = (baseline*1000*intrinsic[0][0]/2)/(gt_disp[x])
+                #     gt_depth[x][gt_depth[x]==inf] = 0
+                # gt_depth = gt_depth.to(self.device)
 
             mask = (gt_disp > 0.) & (gt_disp < args.max_disp)
+            if(onlyObj):
+                gt_disp[sample['label']>=17] = 0
+                mask = (gt_disp > 0.) & (gt_disp < args.max_disp)
 
             if args.load_pseudo_gt:
                 pseudo_gt_disp = sample['pseudo_disp'].to(device)
@@ -302,7 +305,8 @@ class Model(object):
                 gt_depth = gt_disp*256.
                 gt_disp = gt_disp_1
 
-            if(args.dataset_name == 'custom_dataset_full'):
+            if(args.dataset_name == 'custom_dataset_full' or
+                args.dataset_name == 'custom_dataset_obj'):
 
                 # convert to disparity then apply warp ops
                 temp = gt_disp*256.
@@ -365,8 +369,7 @@ class Model(object):
                                           mode='bilinear', align_corners=False) * (gt_disp.size(-1) / pred_disp.size(-1))
                 pred_disp = pred_disp.squeeze(1)  # [B, H, W]
 
-            if((args.dataset_name == 'custom_dataset_sim' or
-                args.dataset_name == 'custom_dataset_real') and onlyObj):
+            if(onlyObj):
                 gt_disp[sample['label']>=17] = 0
                 mask_disp = (gt_disp > 0.) & (gt_disp < args.max_disp)
 
@@ -379,7 +382,8 @@ class Model(object):
             pred_depth = []
             if(args.dataset_name == 'custom_dataset_full' or
                 args.dataset_name == 'custom_dataset_sim' or
-                args.dataset_name == 'custom_dataset_real'):
+                args.dataset_name == 'custom_dataset_real' or
+                args.dataset_name == 'custom_dataset_obj'):
                 temp = torch.zeros((pred_disp.shape)).to(self.device)
                 for x in range(left.shape[0]):
                     baseline = sample['baseline'][x].to(self.device)
@@ -393,8 +397,7 @@ class Model(object):
 
             mask_depth = (gt_depth > 0.) & (gt_depth < 2000)
 
-            if((args.dataset_name == 'custom_dataset_sim' or
-                args.dataset_name == 'custom_dataset_real') and onlyObj):
+            if(onlyObj):
                 gt_depth[sample['label']>=17] = 0
                 mask_depth = (gt_depth > 0.) & (gt_disp < args.max_disp)
 
@@ -420,10 +423,13 @@ class Model(object):
                         predObjectDisp = pred_disp[x].detach().clone()
                         predObjectDisp[labels!=obj] = 0
 
+                        mask_depth = (gtObjectDepth > 0.)
+                        mask_disp = (gtObjectDisp > 0.)
+
                         objectCount[obj]+=1
 
                         perObjectDisp[obj] += F.l1_loss(gtObjectDisp[mask_disp], predObjectDisp[mask_disp], reduction='mean')
-                        perObjectDepth[obj] += F.l1_loss(gtObjectDepth[mask_disp], predObjectDepth[mask_disp], reduction='mean')
+                        perObjectDepth[obj] += F.l1_loss(gtObjectDepth[mask_depth], predObjectDepth[mask_depth], reduction='mean')
 
             # thres1 = thres_metric(pred_disp, gt_disp, mask, 1.0)
             # thres2 = thres_metric(pred_disp, gt_disp, mask, 2.0)
@@ -468,8 +474,7 @@ class Model(object):
                 img_summary['gt_depth'] = gt_depth
                 img_summary['gt_disp'] = gt_disp
 
-                if((args.dataset_name == 'custom_dataset_sim' or
-                    args.dataset_name == 'custom_dataset_real') and onlyObj):
+                if(onlyObj):
                     pred_disp[sample['label']>=17] = 0
                     pred_depth[sample['label']>=17] = 0
 
@@ -487,7 +492,7 @@ class Model(object):
 
                 perObjectDisp[key] = float(perObjectDisp[key])/value
                 perObjectDepth[key] = float(perObjectDepth[key])/value
-            print(perObjectDisp, perObjectDepth)
+            print(perObjectDisp, perObjectDepth, objectCount)
 
         mean_epe = val_epe / valid_samples
         mean_d1 = val_d1 / valid_samples
