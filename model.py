@@ -14,7 +14,7 @@ import imageio
 import pickle
 import numpy as np
 
-onlyObj = True
+onlyObj = False
 perObject = False
 perObjectDepth = dict()
 perObjectDisp = dict()
