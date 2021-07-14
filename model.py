@@ -92,8 +92,9 @@ class Model(object):
                     temp[x] = (baseline*1000*intrinsic[0][0]/2)/(temp[x])
                     temp[x][temp[x]==inf] = 0
 
-                gt_disp = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
-                gt_disp = torch.squeeze(gt_disp)
+                gt_disp = temp
+                # gt_disp = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
+                # gt_disp = torch.squeeze(gt_disp)
 
                 # gt_depth = temp
                 # for x in range(left.shape[0]):
@@ -316,8 +317,9 @@ class Model(object):
                     temp[x] = (baseline*1000*intrinsic[0][0]/2)/(temp[x])
                     temp[x][temp[x]==inf] = 0
 
-                gt_disp = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
-                gt_disp = torch.squeeze(gt_disp)
+                gt_disp = temp
+                # gt_disp = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
+                # gt_disp = torch.squeeze(gt_disp)
 
                 gt_depth = temp
                 # convert to gt_depth
@@ -337,8 +339,9 @@ class Model(object):
                     temp[x] = (baseline*1000*intrinsic[0][0]/2)/(temp[x])
                     temp[x][temp[x]==inf] = 0
 
-                gt_disp = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
-                gt_disp = torch.squeeze(gt_disp)
+                gt_disp = temp
+                # gt_disp = apply_disparity_cu(temp.unsqueeze(1),temp.type(torch.int))
+                # gt_disp = torch.squeeze(gt_disp)
 
                 gt_disp = torch.unsqueeze(gt_disp,0)
 
