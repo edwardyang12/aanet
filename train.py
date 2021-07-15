@@ -109,8 +109,8 @@ def main():
 
     # Train loader
     train_transform_list = [transforms.ToPILImage(),
-                            transforms.RandomContrast(),
-                            transforms.RandomBrightness(),
+                            # transforms.RandomContrast(),
+                            # transforms.RandomBrightness(),
                             transforms.ToNumpyArray(),
 
                             # transforms.RandomColor(),
