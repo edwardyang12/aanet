@@ -109,12 +109,13 @@ def main():
 
     # Train loader
     train_transform_list = [transforms.ToPILImage(),
+                            transforms.RandomGamma(),
                             # transforms.RandomContrast(),
                             # transforms.RandomBrightness(),
                             transforms.ToNumpyArray(),
 
                             # transforms.RandomColor(),
-                            transforms.RandomVerticalFlip(),
+                            # transforms.RandomVerticalFlip(),
                             transforms.ToTensor(),
                             # transforms.RandomGaussian(),
                             transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
