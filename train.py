@@ -114,7 +114,7 @@ def main():
                             transforms.ToNumpyArray(),
 
                             # transforms.RandomColor(),
-                            # transforms.RandomVerticalFlip(),
+                            transforms.RandomVerticalFlip(),
                             transforms.ToTensor(),
                             # transforms.RandomGaussian(),
                             transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
